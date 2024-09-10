@@ -18,6 +18,7 @@ type BPJSSubService struct {
 	pb.UnimplementedBPJSServiceServer
 	controller BPJSController
 }
+
 type BPJSController struct {
 	ExampleService interfaces.Example
 }
