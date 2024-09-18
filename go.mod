@@ -3,18 +3,20 @@ module github.com/voxtmault/bpjs-rs-module
 go 1.22.1
 
 require (
-	github.com/voxtmault/bpjs-service-proto v0.0.0-20240908092942-f7e6e37d23fa
+	github.com/go-playground/validator/v10 v10.22.1
+	github.com/voxtmault/bpjs-service-proto v0.0.0-20240918054051-c87220748b95
 	google.golang.org/grpc v1.66.0
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/Lazarus/lz-string-go v0.0.0-20220923232958-c256c46c2022 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/daku10/go-lz-string v0.0.6 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.22.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 )
 

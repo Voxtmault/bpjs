@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"log/slog"
 	"net"
 	"os"
 	"os/signal"
@@ -15,7 +14,7 @@ import (
 	intercept "github.com/voxtmault/bpjs-rs-module/pkg/interceptors"
 	"github.com/voxtmault/bpjs-rs-module/pkg/logger"
 	rpc "github.com/voxtmault/bpjs-rs-module/pkg/rpc"
-	"github.com/voxtmault/bpjs-rs-module/pkg/storage"
+	"github.com/voxtmault/bpjs-rs-module/pkg/utils"
 
 	pbBPJS "github.com/voxtmault/bpjs-service-proto/go"
 
@@ -29,19 +28,20 @@ func main() {
 	time.Local = timeLoc
 
 	// Adjust to your needs
-	if err := storage.InitMariaDB(&AppConfig.DBConfig); err != nil {
-		panic(err)
-	}
-	if err := storage.InitRedis(&AppConfig.RedisConfig); err != nil {
-		panic(err)
-	}
+	// if err := storage.InitMariaDB(&AppConfig.DBConfig); err != nil {
+	// 	panic(err)
+	// }
+	// if err := storage.InitRedis(&AppConfig.RedisConfig); err != nil {
+	// 	panic(err)
+	// }
+	utils.InitValidator()
 	if err := logger.InitLogger(&AppConfig.LoggingConfig); err != nil {
 		panic(err)
 	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", AppConfig.AppPort))
 	if err != nil {
-		log.Fatalf("Failed to listed: %v", err)
+		log.Fatalf("Failed to listen: %v", err)
 	}
 
 	// Experimental Rate Limiter
@@ -68,10 +68,10 @@ func main() {
 
 	// Init gRPC Sercices
 	bpjsService := rpc.InitRPCService()
-	pbBPJS.RegisterBPJSServiceServer(s, bpjsService.BPJSSubService)
+	pbBPJS.RegisterParticipantServiceServer(s, bpjsService.ParticipantService)
 
 	go func() {
-		log.Printf("gRPC Auth Server listening at %v", lis.Addr())
+		log.Printf("BPJS gRPC Server listening at %v", lis.Addr())
 
 		if err = s.Serve(lis); err != nil {
 			log.Fatalf("Failed to serve: %v", err)
@@ -92,14 +92,14 @@ func main() {
 	s.Stop()
 
 	// Closes connections
-	log.Println("Closing Database Connection")
-	if err := storage.Close(); err != nil {
-		log.Println("Error closing DB connection")
-		panic(err)
-	}
-	slog.Info("Closing Redis Connection")
-	if err := storage.CloseRedis(); err != nil {
-		log.Println("Error closing redis connection")
-		panic(err)
-	}
+	// log.Println("Closing Database Connection")
+	// if err := storage.Close(); err != nil {
+	// 	log.Println("Error closing DB connection")
+	// 	panic(err)
+	// }
+	// slog.Info("Closing Redis Connection")
+	// if err := storage.CloseRedis(); err != nil {
+	// 	log.Println("Error closing redis connection")
+	// 	panic(err)
+	// }
 }
