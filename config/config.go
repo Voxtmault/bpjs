@@ -68,6 +68,17 @@ type FileHandlingConfig struct {
 	FileRootPath string
 }
 
+type BPJSConfig struct {
+	BPJSURL    string
+	VClaimPath string
+
+	ConsumerID     string
+	ConsumerSecret string
+	Userkey        string
+	PPKCode        string
+	PPKName        string
+}
+
 type AppConfig struct {
 	DBConfig
 	RedisConfig
@@ -76,6 +87,7 @@ type AppConfig struct {
 	SecurityConfig
 	SSLConfig
 	FileHandlingConfig
+	BPJSConfig
 	AppMode     string
 	AppLanguage string
 	AppTimezone string
@@ -141,6 +153,15 @@ func New(envPath string) *AppConfig {
 		FileHandlingConfig: FileHandlingConfig{
 			MaxFileSize:  uint(getEnvAsInt("MAX_FILE_SIZE", 1024)),
 			FileRootPath: getEnv("FILE_ROOT_PATH", "./files"),
+		},
+		BPJSConfig: BPJSConfig{
+			BPJSURL:        getEnv("BPJS_URL", ""),
+			VClaimPath:     getEnv("VCLAIM_PATH", ""),
+			ConsumerID:     getEnv("CONSUMER_ID", ""),
+			ConsumerSecret: getEnv("CONSUMER_SECRET", ""),
+			Userkey:        getEnv("USER_KEY", ""),
+			PPKCode:        getEnv("PPK_CODE", ""),
+			PPKName:        getEnv("PPK_NAME", ""),
 		},
 		AppMode:     getEnv("APP_MODE", "devs"),
 		AppLanguage: getEnv("APP_LANG", "en"),

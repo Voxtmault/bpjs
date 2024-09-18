@@ -6,12 +6,12 @@ import (
 )
 
 type BPJSService struct {
-	BPJSSubService *subservice.BPJSSubService
+	ParticipantService *subservice.BPJSParticipantRPCService
 }
 
 func InitRPCService() *BPJSService {
 	s := BPJSService{
-		BPJSSubService: subservice.InitBPJSSubService(),
+		ParticipantService: subservice.InitParticipantService(),
 	}
 	return &s
 }
