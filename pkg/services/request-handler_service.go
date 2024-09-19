@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
 
@@ -32,8 +31,6 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 	if err != nil {
 		return "", eris.Wrap(err, "failed to create signature")
 	}
-
-	log.Println("Timestamp: ", timeStamp)
 
 	// Add custom headers
 	req.Header.Add("Content-Type", "application/json")
@@ -72,8 +69,6 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 	if err != nil {
 		return "", eris.Wrap(err, "failed to decrypt response")
 	}
-
-	log.Println("Decrypted Body: ", decryptedBody)
 
 	return decryptedBody, nil
 }

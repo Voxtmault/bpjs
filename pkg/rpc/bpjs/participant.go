@@ -62,8 +62,8 @@ func (s *BPJSParticipantRPCService) GetParticipant(ctx context.Context, in *pb.G
 	return &pb.GetParticipantResponse{
 		StatusCode: int32(codes.OK),
 		Message:    "Success",
-		Participant: &pb.Participant{
-			Obj: string(obj),
+		Participant: &pb.BPJSParticipant{
+			Name: string(obj),
 		},
 	}, nil
 }

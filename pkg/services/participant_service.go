@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -54,7 +55,13 @@ func (s *BPJSParticipantService) GetParticipant(ctx context.Context, query *mode
 	if err != nil {
 		return nil, eris.Wrap(err, "failed to send http request")
 	}
+
+	var obj models.BPJSParticipant
+	if err = json.Unmarshal([]byte(resp), &obj); err != nil {
+		return nil, eris.Wrap(err, "failed to unmarshal response")
+	}
+
 	log.Println("Response: ", resp)
 
-	return nil, nil
+	return &obj, nil
 }
