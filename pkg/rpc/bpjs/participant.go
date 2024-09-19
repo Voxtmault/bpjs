@@ -2,9 +2,9 @@ package bpjs
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
+	"github.com/rotisserie/eris"
 	"github.com/voxtmault/bpjs-rs-module/pkg/interfaces"
 	"github.com/voxtmault/bpjs-rs-module/pkg/models"
 	"github.com/voxtmault/bpjs-rs-module/pkg/services"
@@ -50,20 +50,19 @@ func (s *BPJSParticipantRPCService) GetParticipant(ctx context.Context, in *pb.G
 
 	data, err := s.Service.GetParticipant(ctx, params)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Errorf("failed to get participant: %w", err).Error())
-	}
+		// log.Println(eris.Cause(err))
 
-	// For now just marshall the data into string
-	obj, err := json.Marshal(data)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Errorf("failed to marshall data: %w", err).Error())
+		if data != nil {
+			// Meaning that there is no internal error, but a business error
+			return nil, status.Error(codes.InvalidArgument, eris.Cause(err).Error())
+		} else {
+			return nil, status.Errorf(codes.Internal, fmt.Errorf("failed to get participant: %w", err).Error())
+		}
 	}
 
 	return &pb.GetParticipantResponse{
-		StatusCode: int32(codes.OK),
-		Message:    "Success",
-		Participant: &pb.BPJSParticipant{
-			Name: string(obj),
-		},
+		StatusCode:  int32(codes.OK),
+		Message:     "Success",
+		Participant: data.ToProto(),
 	}, nil
 }

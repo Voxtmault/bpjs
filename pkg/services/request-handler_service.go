@@ -61,14 +61,14 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 
 	if response.MetaData.Code != "200" {
 		// If the response code is not 200, return the error message
-		return "", eris.New(response.MetaData.Message)
+		return response.MetaData.Message, eris.New("failed to get participant")
 	}
 
 	// Decrypt the response
-	decryptedBody, err := s.Security.DecryptResponse(ctx, timeStamp, response.Response)
+	raw, err := s.Security.DecryptResponse(ctx, timeStamp, response.Response)
 	if err != nil {
 		return "", eris.Wrap(err, "failed to decrypt response")
 	}
 
-	return decryptedBody, nil
+	return raw, nil
 }

@@ -40,6 +40,10 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/voxtmault/bpjs-service-proto v0.0.0-20240919042219-c7d922eb9dd3 h1:EIdKHNT83wCZqF1bpNBz66Ik0js/OB9IlnIfOCxmy4g=
 github.com/voxtmault/bpjs-service-proto v0.0.0-20240919042219-c7d922eb9dd3/go.mod h1:3GLiwTNlXb8G6Dk+Yn/47lfeVpIkykVciAI03D8gL38=
+github.com/voxtmault/bpjs-service-proto v0.0.0-20240919043704-224b20f1c70d h1:UtWiHWpHV2Lr72O7M1dYoStMoyU7ZA1n+j54O4h1+Io=
+github.com/voxtmault/bpjs-service-proto v0.0.0-20240919043704-224b20f1c70d/go.mod h1:3GLiwTNlXb8G6Dk+Yn/47lfeVpIkykVciAI03D8gL38=
+github.com/voxtmault/bpjs-service-proto v0.0.0-20240919043908-b63d40e92c56 h1:A7cEbKQlAS8UpcGePTb/p55n3UdEW5XUDCvDEqHbpvM=
+github.com/voxtmault/bpjs-service-proto v0.0.0-20240919043908-b63d40e92c56/go.mod h1:3GLiwTNlXb8G6Dk+Yn/47lfeVpIkykVciAI03D8gL38=
 golang.org/x/crypto v0.27.0 h1:GXm2NjJrPaiv/h1tb2UH8QfgC/hOf/+z0p6PT8o1w7A=
 golang.org/x/crypto v0.27.0/go.mod h1:1Xngt8kV6Dvbssa53Ziq6Eqn0HqbZi5Z6R0ZpwQzt70=
 golang.org/x/net v0.29.0 h1:5ORfpBpCs4HzDYoodCDBbwHzdR5UrLBZ3sOnUJmFoHo=

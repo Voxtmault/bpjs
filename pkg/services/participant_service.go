@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
@@ -33,18 +32,18 @@ func (s *BPJSParticipantService) GetParticipant(ctx context.Context, query *mode
 		query.ServiceDate = time.Now().Format(time.DateOnly)
 	}
 
-	if query.NIK != "" {
-		// Search by NIK
-		baseUrl += "/Peserta/nik/" + query.NIK + "/tglSEP/" + query.ServiceDate
-	} else if query.BPJSNumber != "" {
+	if query.BPJSNumber != "" {
 		// Search By BPJS Number
 		baseUrl += "/Peserta/nokartu/" + query.BPJSNumber + "/tglSEP/" + query.ServiceDate
+	} else if query.NIK != "" {
+		// Search by NIK
+		baseUrl += "/Peserta/nik/" + query.NIK + "/tglSEP/" + query.ServiceDate
 	} else {
 		// Invalid query
-		return nil, eris.New("invalid query params")
+		return &models.BPJSParticipant{}, eris.New("invalid query params")
 	}
 
-	log.Println("URL: ", baseUrl)
+	// log.Println("URL: ", baseUrl)
 
 	req, err := http.NewRequest(method, baseUrl, nil)
 	if err != nil {
@@ -53,15 +52,17 @@ func (s *BPJSParticipantService) GetParticipant(ctx context.Context, query *mode
 
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
-		return nil, eris.Wrap(err, "failed to send http request")
+		if resp != "" {
+			return &models.BPJSParticipant{}, eris.Wrap(eris.New(resp), "failed to send http request")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
 	}
 
-	var obj models.BPJSParticipant
+	var obj models.BPJSParticipantResponse
 	if err = json.Unmarshal([]byte(resp), &obj); err != nil {
 		return nil, eris.Wrap(err, "failed to unmarshal response")
 	}
 
-	log.Println("Response: ", resp)
-
-	return &obj, nil
+	return obj.Participant, nil
 }

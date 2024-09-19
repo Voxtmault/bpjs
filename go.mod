@@ -5,7 +5,7 @@ go 1.22.1
 require (
 	github.com/daku10/go-lz-string v0.0.6
 	github.com/go-playground/validator/v10 v10.22.1
-	github.com/voxtmault/bpjs-service-proto v0.0.0-20240919042219-c7d922eb9dd3
+	github.com/voxtmault/bpjs-service-proto v0.0.0-20240919043908-b63d40e92c56
 	google.golang.org/grpc v1.66.2
 )
 
