@@ -13,6 +13,7 @@ type COB struct {
 
 type Information struct {
 	Dinsos      string `json:"dinsos"`
+	ESEP        string `json:"eSEP,omitempty"`
 	SKTMNumber  string `json:"noSKTM"`
 	ProlanisPRB string `json:"prolanisPRB"`
 }
@@ -43,23 +44,23 @@ type ParticipantStatus struct {
 }
 
 type BPJSParticipant struct {
-	Name              string            `json:"nama"`
-	NIK               string            `json:"nik"`
-	CardNumber        string            `json:"noKartu"`
-	Pisa              string            `json:"pisa"`
-	Sex               string            `json:"sex"`
-	TATDate           string            `json:"tglTAT"`
-	TMTDate           string            `json:"tglTMT"`
-	DOB               string            `json:"tglLahir"`
-	CardPrintDate     string            `json:"tglCetakKartu"`
-	COB               COB               `json:"cob"`
-	ClassRights       ClassRights       `json:"hakKelas"`
-	Information       Information       `json:"informasi"`
-	ParticipantType   ParticipantType   `json:"jenisPeserta"`
-	MedicalRecord     BPJSMedicalRecord `json:"mr"`
-	ProvUmum          ProvUmum          `json:"provUmum"`
-	ParticipantStatus ParticipantStatus `json:"statusPeserta"`
-	Age               PatientAge        `json:"umur"`
+	Name              string             `json:"nama"`
+	NIK               string             `json:"nik"`
+	CardNumber        string             `json:"noKartu"`
+	Pisa              string             `json:"pisa"`
+	Sex               string             `json:"sex"`
+	TATDate           string             `json:"tglTAT"`
+	TMTDate           string             `json:"tglTMT"`
+	DOB               string             `json:"tglLahir"`
+	CardPrintDate     string             `json:"tglCetakKartu"`
+	COB               *COB               `json:"cob"`
+	ClassRights       *ClassRights       `json:"hakKelas"`
+	Information       *Information       `json:"informasi"`
+	ParticipantType   *ParticipantType   `json:"jenisPeserta"`
+	MedicalRecord     *BPJSMedicalRecord `json:"mr"`
+	ProvUmum          *ProvUmum          `json:"provUmum"`
+	ParticipantStatus *ParticipantStatus `json:"statusPeserta"`
+	Age               *PatientAge        `json:"umur"`
 }
 
 type BPJSParticipantResponse struct {
@@ -138,44 +139,44 @@ func (p *BPJSParticipant) FromProto(obj *pb.BPJSParticipant) {
 	p.TMTDate = obj.GetTmtDate()
 	p.DOB = obj.GetDob()
 	p.CardPrintDate = obj.GetCardPrintDate()
-	p.COB = COB{
+	p.COB = &COB{
 		InsuranceName:   obj.GetCob().GetInsuranceName(),
 		InsuranceNumber: obj.GetCob().GetInsuranceNumber(),
 		TATDate:         obj.GetCob().GetTatDate(),
 		TMTDate:         obj.GetCob().GetTmtDate(),
 	}
-	p.ClassRights = ClassRights{
+	p.ClassRights = &ClassRights{
 		ReusableNote: ReusableNote{
 			Code: obj.GetClassRights().GetCode(),
 			Note: obj.GetClassRights().GetNote(),
 		},
 	}
-	p.Information = Information{
+	p.Information = &Information{
 		Dinsos:      obj.GetInformation().GetDinsos(),
 		SKTMNumber:  obj.GetInformation().GetSKTMNumber(),
 		ProlanisPRB: obj.GetInformation().GetProlanisPRB(),
 	}
-	p.ParticipantType = ParticipantType{
+	p.ParticipantType = &ParticipantType{
 		ReusableNote: ReusableNote{
 			Code: obj.GetClassRights().GetCode(),
 			Note: obj.GetClassRights().GetNote(),
 		},
 	}
-	p.MedicalRecord = BPJSMedicalRecord{
+	p.MedicalRecord = &BPJSMedicalRecord{
 		MRNumber:    obj.GetMedicalRecord().GetMRNumber(),
 		PhoneNumber: obj.GetMedicalRecord().GetPhoneNumber(),
 	}
-	p.ProvUmum = ProvUmum{
+	p.ProvUmum = &ProvUmum{
 		ProviderCode: obj.GetProvUmum().GetProviderCode(),
 		ProviderName: obj.GetProvUmum().GetProviderName(),
 	}
-	p.ParticipantStatus = ParticipantStatus{
+	p.ParticipantStatus = &ParticipantStatus{
 		ReusableNote: ReusableNote{
 			Code: obj.GetClassRights().GetCode(),
 			Note: obj.GetClassRights().GetNote(),
 		},
 	}
-	p.Age = PatientAge{
+	p.Age = &PatientAge{
 		AgeNow:       obj.GetAge().GetAgeNow(),
 		AgeAtService: obj.GetAge().GetAgeAtService(),
 	}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -32,8 +33,12 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 		return "", eris.Wrap(err, "failed to create signature")
 	}
 
+	// If none is set from the caller then use the default
+	if req.Header.Get("Content-Type") == "" {
+		req.Header.Add("Content-Type", "application/json")
+	}
+
 	// Add custom headers
-	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("X-cons-id", cfg.ConsumerID)
 	req.Header.Add("X-timestamp", fmt.Sprintf("%d", timeStamp))
 	req.Header.Add("X-signature", signature)
@@ -53,6 +58,8 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 		return "", eris.Wrap(err, "failed to read response body")
 	}
 
+	log.Println("Body: ", string(body))
+
 	// Unmarshall into response obj
 	var response models.BPJSResponse
 	if err := json.Unmarshal(body, &response); err != nil {
@@ -60,6 +67,7 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 	}
 
 	if response.MetaData.Code != "200" {
+		log.Println("Response: ", response.MetaData)
 		// If the response code is not 200, return the error message
 		return response.MetaData.Message, eris.New("failed to get participant")
 	}
