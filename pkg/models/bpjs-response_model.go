@@ -1,8 +1,8 @@
 package models
 
 type BPJSResponse struct {
-	MetaData MetaData `json:"metaData"`
-	Response string   `json:"response"`
+	MetaData *MetaData `json:"metaData"`
+	Response string    `json:"response"`
 }
 
 type MetaData struct {
