@@ -5,26 +5,26 @@ import (
 	"log"
 	"testing"
 
-	"github.com/rotisserie/eris"
 	"github.com/voxtmault/bpjs-rs-module/config"
-	"github.com/voxtmault/bpjs-rs-module/pkg/models"
 )
 
-func TestGetParticipantByReferralNumber(t *testing.T) {
+func TestGetDiagnosis(t *testing.T) {
+	// Load the config
 	config.New("/home/andy/go-projects/rs/bpjs/.env")
 
-	service := ReferralService{
+	s := ReferenceService{
 		HttpHandler: &RequestHandlerService{
 			Security: &BPJSSecurityService{},
 		},
 	}
 
-	data, err := service.GetParticipantReferralByReferralNumber(context.Background(), "030107010217Y001465", models.PCareSource)
+	data, err := s.DiagnoseReference(context.Background(), "")
 	if err != nil {
-		log.Println("Root Error", eris.Cause(err))
-		t.Errorf("Error getting participant referral by referral number: %v", err)
+		t.Errorf("Error getting diagnosis: %v", err)
 	}
 
-	log.Println("Data: ", data)
+	for _, item := range data {
+		log.Println("Diagnosis: ", item)
+	}
 
 }

@@ -58,7 +58,7 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 		return "", eris.Wrap(err, "failed to read response body")
 	}
 
-	log.Println("Body: ", string(body))
+	log.Println("Response: ", string(body))
 
 	// Unmarshall into response obj
 	var response models.BPJSResponse
