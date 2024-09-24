@@ -7,7 +7,7 @@ import (
 )
 
 type Reference interface {
-	DiagnoseReference(ctx context.Context) ([]*models.Reference, error)
+	DiagnoseReference(ctx context.Context, diagnosisCode string) ([]*models.Reference, error)
 	DoctorReference(ctx context.Context) ([]*models.Reference, error)
 	PoliclinicsReference(ctx context.Context) ([]*models.Reference, error)
 	HealthFacilityReference(ctx context.Context) ([]*models.Reference, error)
