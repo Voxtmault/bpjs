@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/voxtmault/bpjs-rs-module/pkg/interfaces"
 	"github.com/voxtmault/bpjs-rs-module/pkg/models"
@@ -13,6 +14,7 @@ type ReferenceService struct {
 var _ interfaces.Reference = &ReferenceService{}
 
 func (s *ReferenceService) DiagnoseReference(ctx context.Context) ([]*models.Reference, error) {
+	fmt.Println()
 	return nil, nil
 }
 
