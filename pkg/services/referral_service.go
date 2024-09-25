@@ -71,5 +71,45 @@ func (s *ReferralService) GetParticipantReferralByReferralNumber(ctx context.Con
 }
 
 func (s *ReferralService) GetParticipantReferralByBPJSNumber(ctx context.Context, bpjsNumber string, source uint, multi bool) ([]*models.Referral, error) {
-	return nil, nil
+	arrObj := []*models.Referral{}
+
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	if source == models.PCareSource {
+		baseUrl += "/Rujukan"
+	} else if source == models.HospitalSource {
+		baseUrl += "/Rujukan/RS"
+	} else {
+		return nil, eris.New("invalid source")
+	}
+
+	if multi {
+		baseUrl += "/List/Peserta" + bpjsNumber
+	} else {
+		baseUrl += "/Peserta/" + bpjsNumber
+	}
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return arrObj, eris.Wrap(eris.New(resp), "failed to send http request")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	var obj models.Referral
+	if err = json.Unmarshal([]byte(resp), &obj); err != nil {
+		return nil, eris.Wrap(err, "failed to unmarshal response")
+	}
+
+	arrObj = append(arrObj, &obj)
+
+	return arrObj, nil
 }

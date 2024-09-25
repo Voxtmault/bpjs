@@ -58,7 +58,7 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 		return "", eris.Wrap(err, "failed to read response body")
 	}
 
-	log.Println("Response: ", string(body))
+	// log.Println("Response: ", string(body))
 
 	// Unmarshall into response obj
 	var response models.BPJSResponse
@@ -69,6 +69,13 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 	if response.MetaData.Code != "200" {
 		log.Println("Response: ", response.MetaData)
 		// If the response code is not 200, return the error message
+
+		// If the response message is "Data Tidak Ada", treat this as a 404 response code
+		// IDK why they insists in returning code 201 :/
+		if response.MetaData.Message == "Data Tidak Ada" {
+			return "", nil
+		}
+
 		return response.MetaData.Message, eris.New("failed to get participant")
 	}
 

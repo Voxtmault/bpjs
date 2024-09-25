@@ -63,27 +63,27 @@ func TestInsertSEP(t *testing.T) {
 	// }
 
 	sample := `{
-                 "noKartu":"0001105689835",
-                 "tglSep":"2021-07-30",
-                 "ppkPelayanan":"0301R011",
-                 "jnsPelayanan":"1",
+                 "noKartu":"0002017051402",
+                 "tglSep":"2024-09-25",
+                 "ppkPelayanan":"0182R009",
+                 "jnsPelayanan":"2",
                  "klsRawat":{
-                    "klsRawatHak":"2",
-                    "klsRawatNaik":"1",
-                    "pembiayaan":"1",
-                    "penanggungJawab":"Pribadi"
+                    "klsRawatHak":"3",
+                    "klsRawatNaik":"",
+                    "pembiayaan":"",
+                    "penanggungJawab":""
                  },
-                 "noMR":"MR9835",
+                 "noMR":"",
                  "rujukan":{
-                    "asalRujukan":"2",
-                    "tglRujukan":"2021-07-23",
-                    "noRujukan":"RJKMR9835001",
-                    "ppkRujukan":"0301R011"
+                    "asalRujukan":"",
+                    "tglRujukan":"",
+                    "noRujukan":"",
+                    "ppkRujukan":""
                  },
-                 "catatan":"testinsert RI",
+                 "catatan":"testinsert RJ",
                  "diagAwal":"E10",
                  "poli":{
-                    "tujuan":"",
+                    "tujuan":"INT",
                     "eksekutif":"0"
                  },
                  "cob":{
@@ -94,7 +94,7 @@ func TestInsertSEP(t *testing.T) {
                  },
                  "jaminan":{
                     "lakaLantas":"0",
-                    "noLP":"12345",
+                    "noLP":"",
                     "penjamin":{
                        "tglKejadian":"",
                        "keterangan":"",
@@ -114,10 +114,10 @@ func TestInsertSEP(t *testing.T) {
                  "kdPenunjang":"",
                  "assesmentPel":"",
                  "skdp":{
-                    "noSurat":"0301R0110721K000021",
-                    "kodeDPJP":"31574"
+                    "noSurat":"",
+                    "kodeDPJP":""
                  },
-                 "dpjpLayan":"",
+                 "dpjpLayan":"31486",
                  "noTelp":"081111111101",
                  "user":"Coba Ws"
               }`
