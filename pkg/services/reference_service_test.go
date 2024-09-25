@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"testing"
 
@@ -10,7 +11,7 @@ import (
 
 func TestGetDiagnosis(t *testing.T) {
 	// Load the config
-	config.New("/home/andy/go-projects/rs/bpjs/.env")
+	config.New(`D:\Goland\bpjs\.env`)
 
 	s := ReferenceService{
 		HttpHandler: &RequestHandlerService{
@@ -18,11 +19,12 @@ func TestGetDiagnosis(t *testing.T) {
 		},
 	}
 
-	data, err := s.DiagnoseReference(context.Background(), "")
+	data, err := s.PoliclinicsReference(context.Background(), "")
 	if err != nil {
 		t.Errorf("Error getting diagnosis: %v", err)
 	}
-
+	// time.Sleep(1 * time.Second)
+	fmt.Println(data)
 	for _, item := range data {
 		log.Println("Diagnosis: ", item)
 	}
