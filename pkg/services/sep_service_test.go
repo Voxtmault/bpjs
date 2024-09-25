@@ -73,7 +73,7 @@ func TestInsertSEP(t *testing.T) {
                     "pembiayaan":"",
                     "penanggungJawab":""
                  },
-                 "noMR":"",
+                 "noMR":"000001",
                  "rujukan":{
                     "asalRujukan":"",
                     "tglRujukan":"",
