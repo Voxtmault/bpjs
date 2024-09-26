@@ -20,7 +20,7 @@ func TestGetDiagnosis(t *testing.T) {
 		},
 	}
 
-	data, err := s.DiagnoseReference(context.Background(), "")
+	data, err := s.DiagnoseReference(context.Background(), "B201")
 	if err != nil {
 		t.Errorf("Error getting diagnosis: %v", err)
 	}

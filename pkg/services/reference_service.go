@@ -40,16 +40,20 @@ func (s *ReferenceService) DiagnoseReference(ctx context.Context, diagnosisCode 
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.Diagnosis, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.Diagnosis, nil
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
 	}
 
-	log.Println("Response: ", resp)
+	// log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.Diagnosis, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.Diagnosis, nil
@@ -60,7 +64,6 @@ func (s *ReferenceService) DoctorReference(ctx context.Context, jenisPelayanan, 
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/dokter/pelayanan/" + jenisPelayanan + "/tglPelayanan/" + tglPelayanan + "/Spesialis/" + kodeSPesialis
 
 	// log.Println("URL: ", baseUrl)
@@ -81,12 +84,15 @@ func (s *ReferenceService) DoctorReference(ctx context.Context, jenisPelayanan, 
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.Doctor, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.Doctor, nil
-	// return nil, nil
 }
 
 func (s *ReferenceService) PoliclinicsReference(ctx context.Context, poliCode string) ([]*models.Reference, error) {
@@ -94,7 +100,6 @@ func (s *ReferenceService) PoliclinicsReference(ctx context.Context, poliCode st
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/poli"
 
 	if poliCode != "" {
@@ -119,12 +124,15 @@ func (s *ReferenceService) PoliclinicsReference(ctx context.Context, poliCode st
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.Poli, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.Poli, nil
-	// return nil, nil
 }
 
 func (s *ReferenceService) HealthFacilityReference(ctx context.Context, namaFaskes, jenisFaskes string) ([]*models.Reference, error) {
@@ -132,12 +140,7 @@ func (s *ReferenceService) HealthFacilityReference(ctx context.Context, namaFask
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
-	baseUrl += "/referensi/faskes" + namaFaskes + "/" + jenisFaskes
-
-	// if diagnosisCode != "" {
-	// 	baseUrl += "/" + diagnosisCode
-	// }
+	baseUrl += "/referensi/faskes/" + namaFaskes + "/" + jenisFaskes
 
 	// log.Println("URL: ", baseUrl)
 
@@ -157,12 +160,15 @@ func (s *ReferenceService) HealthFacilityReference(ctx context.Context, namaFask
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.Faskes, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.Faskes, nil
-	// return nil, nil
 }
 
 func (s *ReferenceService) ProcedureReference(ctx context.Context, procedure string) ([]*models.Reference, error) {
@@ -170,12 +176,8 @@ func (s *ReferenceService) ProcedureReference(ctx context.Context, procedure str
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
+	// Uses ICD-9 procedure code
 	baseUrl += "/referensi/procedure/" + procedure
-
-	// if diagnosisCode != "" {
-	// 	baseUrl += "/" + diagnosisCode
-	// }
 
 	// log.Println("URL: ", baseUrl)
 
@@ -195,8 +197,12 @@ func (s *ReferenceService) ProcedureReference(ctx context.Context, procedure str
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.Procedure, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.Procedure, nil
@@ -207,11 +213,7 @@ func (s *ReferenceService) NursingClassReference(ctx context.Context) ([]*models
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/kelasrawat"
-	// if diagnosisCode != "" {
-	// 	baseUrl += "/" + diagnosisCode
-	// }
 
 	// log.Println("URL: ", baseUrl)
 
@@ -231,12 +233,15 @@ func (s *ReferenceService) NursingClassReference(ctx context.Context) ([]*models
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.List, nil
-	// return nil, nil
 }
 
 func (s *ReferenceService) SpecialistReference(ctx context.Context) ([]*models.Reference, error) {
@@ -244,12 +249,7 @@ func (s *ReferenceService) SpecialistReference(ctx context.Context) ([]*models.R
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/spesialistik"
-
-	// if diagnosisCode != "" {
-	// 	baseUrl += "/" + diagnosisCode
-	// }
 
 	// log.Println("URL: ", baseUrl)
 
@@ -269,12 +269,15 @@ func (s *ReferenceService) SpecialistReference(ctx context.Context) ([]*models.R
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.List, nil
-	// return nil, nil
 }
 
 func (s *ReferenceService) DischargeMethodReference(ctx context.Context) ([]*models.Reference, error) {
@@ -283,12 +286,7 @@ func (s *ReferenceService) DischargeMethodReference(ctx context.Context) ([]*mod
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/carakeluar"
-
-	// if diagnosisCode != "" {
-	// 	baseUrl += "/" + diagnosisCode
-	// }
 
 	// log.Println("URL: ", baseUrl)
 
@@ -308,8 +306,12 @@ func (s *ReferenceService) DischargeMethodReference(ctx context.Context) ([]*mod
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.List, nil
@@ -320,12 +322,7 @@ func (s *ReferenceService) PostDischargeReference(ctx context.Context) ([]*model
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/pascapulang"
-
-	// if diagnosisCode != "" {
-	// 	baseUrl += "/" + diagnosisCode
-	// }
 
 	// log.Println("URL: ", baseUrl)
 
@@ -345,8 +342,12 @@ func (s *ReferenceService) PostDischargeReference(ctx context.Context) ([]*model
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.List, nil
@@ -358,7 +359,6 @@ func (s *ReferenceService) ProvinceReference(ctx context.Context) ([]*models.Ref
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/propinsi"
 
 	// log.Println("URL: ", baseUrl)
@@ -379,12 +379,15 @@ func (s *ReferenceService) ProvinceReference(ctx context.Context) ([]*models.Ref
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.List, nil
-	// return nil, nil
 }
 
 // Kabupaten
@@ -393,12 +396,7 @@ func (s *ReferenceService) RegencyReference(ctx context.Context, kodeProvince st
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/kabupaten/propinsi/" + kodeProvince
-
-	// if diagnosisCode != "" {
-	// 	baseUrl += "/" + diagnosisCode
-	// }
 
 	// log.Println("URL: ", baseUrl)
 
@@ -418,8 +416,12 @@ func (s *ReferenceService) RegencyReference(ctx context.Context, kodeProvince st
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.List, nil
@@ -431,12 +433,7 @@ func (s *ReferenceService) DistrictReference(ctx context.Context, kodeKota strin
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/kecamatan/kabupaten/" + kodeKota
-
-	// if diagnosisCode != "" {
-	// 	baseUrl += "/" + diagnosisCode
-	// }
 
 	// log.Println("URL: ", baseUrl)
 
@@ -456,8 +453,12 @@ func (s *ReferenceService) DistrictReference(ctx context.Context, kodeKota strin
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.List, nil
@@ -469,12 +470,7 @@ func (s *ReferenceService) AttendingPhysicianReference(ctx context.Context, kode
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
-	// Uses ICD-10 diagnosis code
 	baseUrl += "/referensi/dokter/" + kodeDokter
-
-	// if diagnosisCode != "" {
-	// 	baseUrl += "/" + diagnosisCode
-	// }
 
 	// log.Println("URL: ", baseUrl)
 
@@ -494,8 +490,12 @@ func (s *ReferenceService) AttendingPhysicianReference(ctx context.Context, kode
 
 	log.Println("Response: ", resp)
 
-	if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
-		return nil, eris.Wrap(err, "failed to unmarshal response")
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
 	}
 
 	return arrObj.List, nil

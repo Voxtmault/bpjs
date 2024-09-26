@@ -7,11 +7,13 @@ import (
 
 type BPJSService struct {
 	ParticipantService *subservice.BPJSParticipantRPCService
+	ReferenceService   *subservice.BPJSReferenceRPCService
 }
 
 func InitRPCService() *BPJSService {
 	s := BPJSService{
 		ParticipantService: subservice.InitParticipantService(),
+		ReferenceService:   subservice.InitReferenceService(),
 	}
 	return &s
 }

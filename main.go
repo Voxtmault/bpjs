@@ -69,6 +69,7 @@ func main() {
 	// Init gRPC Sercices
 	bpjsService := rpc.InitRPCService()
 	pbBPJS.RegisterParticipantServiceServer(s, bpjsService.ParticipantService)
+	pbBPJS.RegisterReferenceServiceServer(s, bpjsService.ReferenceService)
 
 	go func() {
 		log.Printf("BPJS gRPC Server listening at %v", lis.Addr())
