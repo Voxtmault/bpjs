@@ -54,7 +54,7 @@ func (s *ReferralService) GetParticipantReferralByReferralNumber(ctx context.Con
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -98,7 +98,7 @@ func (s *ReferralService) GetParticipantReferralByBPJSNumber(ctx context.Context
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}

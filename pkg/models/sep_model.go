@@ -49,6 +49,11 @@ type AccidentLocation struct {
 	ProvinceCode string `json:"kdPropinsi"`
 	RegencyCode  string `json:"kdKabupaten"`
 	DistrictCode string `json:"kdKecamatan"`
+
+	// Everything Bellow is used for parsing SEP Accident Locations
+	Note         string `json:"ketKejadian,omitempty"`
+	Location     string `json:"lokasi,omitempty"`
+	AccidentDate string `json:"tglKejadian,omitempty"`
 }
 
 type SKDP struct {
@@ -85,11 +90,11 @@ type SEPCreate struct {
 // BPJSSEP is used to marshall the SEPCreate struct into a JSON format that is accepted by the BPJS API.
 // It's weird, ik dude trust me, but what can i do :D
 type BPJSSEP struct {
-	Request *TSEP `json:"request"`
+	Request interface{} `json:"request"`
 }
 
 type TSEP struct {
-	TSEP *SEPCreate `json:"t_sep"`
+	TSEP interface{} `json:"t_sep"`
 }
 
 type SEPInformation struct {
@@ -120,13 +125,72 @@ type SEPCreateResponse struct {
 	Information           Information     `json:"informasi"`
 	ServiceType           string          `json:"jnsPelayanan"`
 	HealthCareSupportCode string          `json:"kdPenunjang"`
-	TreatmentClass        string          `json:"klsRawat"`
+	PoliclinicsCode       string          `json:"kdPoli"`
+	TreatmentClass        string          `json:"kelasRawat"`
 	ReferenceNumber       string          `json:"noRujukan"`
-	SEPNumber             string          `json:"noSEP"`
+	SEPNumber             string          `json:"noSep"`
 	Guarantor             string          `json:"penjamin"`
 	Participant           BPJSParticipant `json:"peserta"`
 	Policlinics           string          `json:"poli"`
 	PoliclinicExecutive   string          `json:"poliEksekutif"`
-	SEPDate               string          `json:"tglSEP"`
+	SEPDate               string          `json:"tglSep"`
 	VisitationPurpose     string          `json:"tujuanKunj"`
+}
+
+type SEPUpdate struct {
+	SEPNumber        string         `json:"noSep"`
+	TreatmentClass   TreatmentClass `json:"klsRawat"`
+	MRNumber         string         `json:"noMR"`
+	Note             string         `json:"catatan"`
+	InitialDiagnosis string         `json:"diagAwal"`
+	Policlinics      SEPPoliclinics `json:"poli"`
+	COB              SEPCOB         `json:"cob"`
+	Catharacs        SEPCatharacs   `json:"katarak"`
+	Guarantee        Guarantee      `json:"jaminan"`
+	ServiceDPJP      string         `json:"dpjpLayan"`
+	PhoneNum         string         `json:"noTelp"`
+	User             string         `json:"user"`
+}
+
+type SEPDelete struct {
+	SEPNumber string `json:"noSep"`
+	User      string `json:"user"`
+}
+
+type DPJP struct {
+	Code string `json:"kdDPJP"`
+	Name string `json:"nmDPJP"`
+}
+
+type SEPControl struct {
+	DoctorCode          string `json:"kdDokter"`
+	DoctorName          string `json:"nmDokter"`
+	ControlLetterNumber string `json:"noSurat"`
+}
+
+type SEPGet struct {
+	SEPNumber          string                 `json:"noSep"`
+	SEPDate            string                 `json:"tglSep"`
+	ServiceType        string                 `json:"jnsPelayanan"`
+	NursingClass       string                 `json:"kelasRawat"`
+	Diagnosis          string                 `json:"diagnosa"`
+	ReferalNumber      string                 `json:"noRujukan"`
+	Policlinic         string                 `json:"poli"`
+	PoliExecutive      string                 `json:"poliEksekutif"`
+	Note               string                 `json:"catatan"`
+	Guarantor          Guarantor              `json:"penjamin"`
+	AccidentStatusCode string                 `json:"kdStatusKecelakaan"`
+	AccidentStatus     string                 `json:"nmstatusKecelakaan"`
+	AccidentLocation   AccidentLocation       `json:"lokasiKecelakaan"`
+	DPJP               DPJP                   `json:"dpjp"`
+	Participant        SEPParticipantResponse `json:"peserta"`
+	TreatmentClass     TreatmentClass         `json:"klsRawat"`
+	Control            SEPControl             `json:"kontrol"`
+	COB                string                 `json:"cob"`
+	Catharacts         string                 `json:"katarak"`
+	VisitationPurpose  ReusableNote           `json:"tujuanKunj"`
+	FlagProcedure      ReusableNote           `json:"flagProcedure"`
+	HealthCareCode     ReusableNote           `json:"kdPenunjang"`
+	ServiceAssessment  ReusableNote           `json:"assestmenPel"`
+	DigitalSEP         string                 `json:"eSEP"`
 }

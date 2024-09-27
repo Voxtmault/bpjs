@@ -53,6 +53,8 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 	}
 	defer resp.Body.Close()
 
+	log.Println("Status Code: ", resp.StatusCode)
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", eris.Wrap(err, "failed to read response body")
@@ -70,13 +72,10 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 		log.Println("Response: ", response.MetaData)
 		// If the response code is not 200, return the error message
 
-		// If the response message is "Data Tidak Ada", treat this as a 404 response code
+		// If the response message is "Data Tidak Ada" or something similar, you can treat this as a 404 response code
 		// IDK why they insists in returning code 201 :/
-		if response.MetaData.Message == "Data Tidak Ada" {
-			return "", nil
-		}
 
-		return response.MetaData.Message, eris.New("failed to get participant")
+		return response.MetaData.Message, eris.New(response.MetaData.Code)
 	}
 
 	// Decrypt the response

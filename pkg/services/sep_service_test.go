@@ -64,7 +64,7 @@ func TestInsertSEP(t *testing.T) {
 
 	sample := `{
                  "noKartu":"0002017051402",
-                 "tglSep":"2024-09-25",
+                 "tglSep":"2024-09-26",
                  "ppkPelayanan":"0182R009",
                  "jnsPelayanan":"2",
                  "klsRawat":{
@@ -131,7 +131,126 @@ func TestInsertSEP(t *testing.T) {
 	if err != nil {
 		log.Println("Root Error", eris.Cause(err))
 		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
+func TestUpdateSEP(t *testing.T) {
+	// Load the config
+	config.New("/home/andy/go-projects/rs/bpjs/.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
 	}
 
-	log.Println("Data: ", data)
+	sample := `
+	 {
+      "noSep": "0301R0110521V000037",
+      "klsRawat": {
+        "klsRawatHak": "3",
+        "klsRawatNaik": "",
+        "pembiayaan": "",
+        "penanggungJawab": ""
+      },
+      "noMR": "00469120",
+      "catatan": "",
+      "diagAwal": "E10",
+      "poli": {
+        "tujuan": "IGD",
+        "eksekutif": "0"
+      },
+      "cob": {
+        "cob": "0"
+      },
+      "katarak": {
+        "katarak": "0"
+      },
+      "jaminan": {
+        "lakaLantas": "0",
+        "penjamin": {
+          "tglKejadian": "",
+          "keterangan": "",
+          "suplesi": {
+            "suplesi": "0",
+            "noSepSuplesi": "",
+            "lokasiLaka": {
+              "kdPropinsi": "",
+              "kdKabupaten": "",
+              "kdKecamatan": ""
+            }
+          }
+        }
+      },
+      "dpjpLayan": "46",
+      "noTelp": "08522038363",
+      "user": "Cobaws"
+    }
+	`
+
+	var obj models.SEPUpdate
+	if err := json.Unmarshal([]byte(sample), &obj); err != nil {
+		t.Errorf("Error unmarshalling the object: %v", err)
+	}
+
+	data, err := s.UpdateSEP(context.Background(), &obj)
+	if err != nil {
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
+func TestDeleteSEP(t *testing.T) {
+	// Load the config
+	config.New("/home/andy/go-projects/rs/bpjs/.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	sample := `
+	  {
+             "noSep": "0301R0011017V000007",
+             "user": "Coba Ws"
+          }
+	`
+
+	var obj models.SEPDelete
+	if err := json.Unmarshal([]byte(sample), &obj); err != nil {
+		t.Errorf("Error unmarshalling the object: %v", err)
+	}
+
+	data, err := s.DeleteSEP(context.Background(), &obj)
+	if err != nil {
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
+func TestGetSEP(t *testing.T) {
+	// Load the config
+	config.New("/home/andy/go-projects/rs/bpjs/.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	data, err := s.GetSEP(context.Background(), "0301R0010323V000039")
+	if err != nil {
+		log.Println("Errors", err)
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
 }

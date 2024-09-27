@@ -71,6 +71,7 @@ type BPJSParticipantResponse struct {
 type ReusableNote struct {
 	Code string `json:"kode"`
 	Note string `json:"keterangan"`
+	Name string `json:"nama,omitempty"`
 }
 
 // Search Params

@@ -53,7 +53,7 @@ func (s *BPJSParticipantService) GetParticipant(ctx context.Context, query *mode
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return &models.BPJSParticipant{}, eris.Wrap(eris.New(resp), "failed to send http request")
+			return &models.BPJSParticipant{}, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}

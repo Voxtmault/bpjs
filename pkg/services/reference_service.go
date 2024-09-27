@@ -40,7 +40,7 @@ func (s *ReferenceService) DiagnoseReference(ctx context.Context, diagnosisCode 
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.Diagnosis, nil
+			return arrObj.Diagnosis, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -76,7 +76,7 @@ func (s *ReferenceService) DoctorReference(ctx context.Context, jenisPelayanan, 
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.Doctor, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.Doctor, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -116,7 +116,7 @@ func (s *ReferenceService) PoliclinicsReference(ctx context.Context, poliCode st
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.Poli, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.Poli, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -152,7 +152,7 @@ func (s *ReferenceService) HealthFacilityReference(ctx context.Context, namaFask
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.Faskes, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.Faskes, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -189,7 +189,7 @@ func (s *ReferenceService) ProcedureReference(ctx context.Context, procedure str
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.Procedure, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.Procedure, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -225,7 +225,7 @@ func (s *ReferenceService) NursingClassReference(ctx context.Context) ([]*models
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.List, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -261,7 +261,7 @@ func (s *ReferenceService) SpecialistReference(ctx context.Context) ([]*models.R
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.List, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -298,7 +298,7 @@ func (s *ReferenceService) DischargeMethodReference(ctx context.Context) ([]*mod
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.List, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -334,7 +334,7 @@ func (s *ReferenceService) PostDischargeReference(ctx context.Context) ([]*model
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.List, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -371,7 +371,7 @@ func (s *ReferenceService) ProvinceReference(ctx context.Context) ([]*models.Ref
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.List, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -408,7 +408,7 @@ func (s *ReferenceService) RegencyReference(ctx context.Context, kodeProvince st
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.List, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -445,7 +445,7 @@ func (s *ReferenceService) DistrictReference(ctx context.Context, kodeKota strin
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.List, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -482,7 +482,7 @@ func (s *ReferenceService) AttendingPhysicianReference(ctx context.Context, kode
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj.List, eris.Wrap(eris.New(resp), "failed to send http request")
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
