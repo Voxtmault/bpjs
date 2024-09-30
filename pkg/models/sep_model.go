@@ -87,12 +87,6 @@ type SEPCreate struct {
 	User                  string         `json:"user"`
 }
 
-// BPJSSEP is used to marshall the SEPCreate struct into a JSON format that is accepted by the BPJS API.
-// It's weird, ik dude trust me, but what can i do :D
-type BPJSSEP struct {
-	Request interface{} `json:"request"`
-}
-
 type TSEP struct {
 	TSEP interface{} `json:"t_sep"`
 }
@@ -109,7 +103,7 @@ type SEPInformation struct {
 type SEPParticipantResponse struct {
 	Insurance       string `json:"asuransi"`
 	ClassRights     string `json:"hakKelas"`
-	ParticipantType string `json:"jenisPeserta"`
+	ParticipantType string `json:"jnsPeserta"`
 	Sex             string `json:"kelamin"`
 	Name            string `json:"nama"`
 	CardNumber      string `json:"noKartu"`

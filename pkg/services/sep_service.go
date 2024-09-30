@@ -27,7 +27,7 @@ func (s *SEPService) InsertSEP(ctx context.Context, obj *models.SEPCreate) (*mod
 
 	log.Println("URL: ", baseUrl)
 
-	jsonData, err := json.Marshal(models.BPJSSEP{
+	jsonData, err := json.Marshal(models.BPJSRequest{
 		Request: &models.TSEP{
 			TSEP: obj,
 		},
@@ -75,7 +75,7 @@ func (s *SEPService) UpdateSEP(ctx context.Context, obj *models.SEPUpdate) (stri
 
 	log.Println("URL: ", baseUrl)
 
-	jsonData, err := json.Marshal(models.BPJSSEP{
+	jsonData, err := json.Marshal(models.BPJSRequest{
 		Request: &models.TSEP{
 			TSEP: obj,
 		},
@@ -121,7 +121,7 @@ func (s *SEPService) DeleteSEP(ctx context.Context, obj *models.SEPDelete) (stri
 
 	log.Println("URL: ", baseUrl)
 
-	jsonData, err := json.Marshal(models.BPJSSEP{
+	jsonData, err := json.Marshal(models.BPJSRequest{
 		Request: &models.TSEP{
 			TSEP: obj,
 		},

@@ -26,5 +26,4 @@ func TestGetParticipantByReferralNumber(t *testing.T) {
 	}
 
 	log.Println("Data: ", data)
-
 }
