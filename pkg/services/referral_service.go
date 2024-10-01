@@ -199,7 +199,89 @@ func (s *ReferralService) GetReferedFacilities(ctx context.Context, referedHealt
 	return arrObj.Lists, nil
 }
 
-func (s *ReferralService) CreateReferral(ctx context.Context, obj *models.ReferralCreate) (*models.ReferralCreateResponse, error) {
+func (s *ReferralService) GetOutgoingReferral(ctx context.Context, startDate, endDate string) ([]*models.OutgoingReferral, error) {
+	arrObj := models.OutgoingReferralResponse{}
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl = fmt.Sprintf(
+		"%s/Rujukan/Keluar/List/tglMulai/%s/tglAkhir/%s",
+		baseUrl, startDate, endDate,
+	)
+
+	log.Println("URL: ", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return arrObj.Lists, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return arrObj.Lists, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
+	}
+
+	return arrObj.Lists, nil
+}
+
+func (s *ReferralService) GetOutgoingReferralDetail(ctx context.Context, referralNumber string) (*models.ReferralDetail, error) {
+	obj := models.ReferralDetailResponse{}
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl = fmt.Sprintf(
+		"%s/Rujukan/Keluar/%s",
+		baseUrl, referralNumber,
+	)
+
+	log.Println("URL: ", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return obj.Referral, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return obj.Referral, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &obj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
+	}
+
+	return obj.Referral, nil
+}
+
+func (s *ReferralService) CreateReferral(ctx context.Context, obj *models.ReferralAction) (*models.ReferralCreateResponse, error) {
 	referral := models.ReferralCreateResponseWrapper{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodPost
@@ -209,7 +291,7 @@ func (s *ReferralService) CreateReferral(ctx context.Context, obj *models.Referr
 	log.Println("URL: ", baseUrl)
 
 	jsonData, err := json.Marshal(models.BPJSRequest{
-		Request: &models.ReferralCreateWrapper{
+		Request: &models.ReferralActionWrapper{
 			TReferral: obj,
 		},
 	})
@@ -246,4 +328,210 @@ func (s *ReferralService) CreateReferral(ctx context.Context, obj *models.Referr
 	}
 
 	return referral.Referral, nil
+}
+
+func (s *ReferralService) UpdateReferral(ctx context.Context, obj *models.ReferralAction) (string, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodPut
+
+	baseUrl += "/Rujukan/2.0/Update"
+
+	log.Println("URL: ", baseUrl)
+
+	jsonData, err := json.Marshal(models.BPJSRequest{
+		Request: &models.ReferralActionWrapper{
+			TReferral: obj,
+		},
+	})
+	if err != nil {
+		return "", eris.Wrap(err, "failed to marshal object")
+	}
+
+	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return resp, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return "", eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	return resp, nil
+}
+
+func (s *ReferralService) DeleteReferral(ctx context.Context, referralNumber, user string) error {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodDelete
+
+	baseUrl += "/Rujukan/delete"
+
+	log.Println("URL: ", baseUrl)
+
+	jsonData, err := json.Marshal(models.BPJSRequest{
+		Request: models.ReferralActionWrapper{
+			TReferral: struct {
+				ReferralNumber string `json:"noRujukan"`
+				User           string `json:"user"`
+			}{
+				ReferralNumber: referralNumber,
+				User:           user,
+			},
+		},
+	})
+	if err != nil {
+		return eris.Wrap(err, "failed to marshal object")
+	}
+
+	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	return nil
+}
+
+func (s *ReferralService) CreateSpecialReferral(ctx context.Context, obj *models.SpecialReferralCreate) (*models.SpecialReferralCreateResponse, error) {
+	referral := models.SpecialReferralCreateResponseWrapper{}
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodPost
+
+	baseUrl += "/Rujukan/Khusus/insert"
+
+	log.Println("URL: ", baseUrl)
+
+	jsonData, err := json.Marshal(obj)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to marshal object")
+	}
+
+	log.Println("JSON Data: ", string(jsonData))
+
+	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return referral.Referral, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return referral.Referral, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &referral); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
+	}
+
+	return referral.Referral, nil
+}
+
+func (s *ReferralService) GetSpecialReferrals(ctx context.Context, month, year string) ([]*models.SpecialReferrals, error) {
+	arrObj := models.SpecialReferralsResponse{}
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl = fmt.Sprintf(
+		"%s/Rujukan/Khusus/List/Bulan/%s/Tahun/%s",
+		baseUrl, month, year,
+	)
+
+	log.Println("URL: ", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return arrObj.Referrals, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return arrObj.Referrals, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
+	}
+
+	return arrObj.Referrals, nil
+}
+
+func (s *ReferralService) DeleteSpecialReferral(ctx context.Context, obj *models.SpecialReferralDelete) (string, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodDelete
+
+	baseUrl += "/Rujukan/Khusus/delete"
+
+	log.Println("URL: ", baseUrl)
+
+	jsonData, err := json.Marshal(models.BPJSRequest{
+		Request: &models.ReferralActionWrapper{
+			TReferral: obj,
+		},
+	})
+	if err != nil {
+		return "", eris.Wrap(err, "failed to marshal object")
+	}
+
+	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return resp, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return "", eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	return resp, nil
 }

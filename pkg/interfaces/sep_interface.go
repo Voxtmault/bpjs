@@ -11,6 +11,15 @@ type SEP interface {
 	UpdateSEP(ctx context.Context, obj *models.SEPUpdate) (string, error)
 	DeleteSEP(ctx context.Context, obj *models.SEPDelete) (string, error)
 	GetSEP(ctx context.Context, sepNumber string) (*models.SEPGet, error)
+
+	// For SEP Backdate and Fingerprint Request
+	RequestSEP(ctx context.Context, obj *models.SEPRequestCreate) (string, error)
+
+	// For SEP Approval, Only Fingerprint request may be accepted by the HealthCare (Rumah Sakit).
+	// For other types of request, it will be done by BPJS Personnel
+	ApprovalSEPRequest(ctx context.Context, obj *models.SEPRequestCreate) (string, error)
+
+	GetSEPRequests(ctx context.Context, month, year string) ([]*models.SEPRequest, error)
 }
 
 type SuplesiJasaRaharja interface {

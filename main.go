@@ -35,6 +35,9 @@ func main() {
 	// 	panic(err)
 	// }
 	utils.InitValidator()
+	// Register Custom Validators
+	utils.RegisterCustomValidations(utils.GetValidator())
+
 	if err := logger.InitLogger(&AppConfig.LoggingConfig); err != nil {
 		panic(err)
 	}
@@ -66,7 +69,7 @@ func main() {
 		)
 	}
 
-	// Init gRPC Sercices
+	// Init gRPC Services
 	bpjsService := rpc.InitRPCService()
 	pbBPJS.RegisterParticipantServiceServer(s, bpjsService.ParticipantService)
 	pbBPJS.RegisterReferenceServiceServer(s, bpjsService.ReferenceService)

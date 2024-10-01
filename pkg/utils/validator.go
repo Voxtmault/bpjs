@@ -1,6 +1,9 @@
 package utils
 
-import "github.com/go-playground/validator/v10"
+import (
+	"github.com/go-playground/validator/v10"
+	"github.com/voxtmault/bpjs-rs-module/pkg/models"
+)
 
 var validate *validator.Validate
 
@@ -12,4 +15,8 @@ func InitValidator() *validator.Validate {
 
 func GetValidator() *validator.Validate {
 	return validate
+}
+
+func RegisterCustomValidations(v *validator.Validate) {
+	v.RegisterValidation("specialDiag", models.ValidateSpecialReferralDiagnosisCode)
 }

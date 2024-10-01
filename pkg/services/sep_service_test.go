@@ -245,7 +245,97 @@ func TestGetSEP(t *testing.T) {
 		},
 	}
 
-	data, err := s.GetSEP(context.Background(), "0301R0010323V000039")
+	data, err := s.GetSEP(context.Background(), "0001300759569")
+	if err != nil {
+		log.Println("Errors", err)
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
+func TestRequestSEP(t *testing.T) {
+	// Load the config
+	config.New("/home/andy/go-projects/rs/bpjs/.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	sample := `
+	{
+	"noKartu": "0001300759569",
+	"tglSep": "2024-08-26",
+	"jnsPelayanan": "1",
+	"jnsPengajuan": "2",
+	"keterangan": "Hari libur",
+	"user": "Coba Ws"
+	}
+	`
+
+	var obj models.SEPRequestCreate
+	if err := json.Unmarshal([]byte(sample), &obj); err != nil {
+		t.Errorf("Error unmarshalling the object: %v", err)
+	}
+
+	data, err := s.RequestSEP(context.Background(), &obj)
+	if err != nil {
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
+func TestApprovalSEPRequest(t *testing.T) {
+	// Load the config
+	config.New("/home/andy/go-projects/rs/bpjs/.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	sample := `
+	{
+	"noKartu": "0001300759569",
+	"tglSep": "2024-08-26",
+	"jnsPelayanan": "1",
+	"jnsPengajuan": "2",
+	"keterangan": "Hari libur",
+	"user": "Coba Ws"
+	}
+	`
+
+	var obj models.SEPRequestCreate
+	if err := json.Unmarshal([]byte(sample), &obj); err != nil {
+		t.Errorf("Error unmarshalling the object: %v", err)
+	}
+
+	data, err := s.ApprovalSEPRequest(context.Background(), &obj)
+	if err != nil {
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
+func TestGetSEPRequests(t *testing.T) {
+	// Load the config
+	config.New("/home/andy/go-projects/rs/bpjs/.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	data, err := s.GetSEPRequests(context.Background(), "08", "2024")
 	if err != nil {
 		log.Println("Errors", err)
 		log.Println("Root Error", eris.Cause(err))

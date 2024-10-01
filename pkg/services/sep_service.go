@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -195,4 +196,133 @@ func (s *SEPService) GetSEP(ctx context.Context, sepNumber string) (*models.SEPG
 	}
 
 	return &sep, nil
+}
+
+func (s *SEPService) RequestSEP(ctx context.Context, obj *models.SEPRequestCreate) (string, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodPost
+
+	baseUrl += "/Sep/pengajuanSEP"
+
+	log.Println("URL: ", baseUrl)
+
+	jsonData, err := json.Marshal(models.BPJSRequest{
+		Request: &models.TSEP{
+			TSEP: obj,
+		},
+	})
+	if err != nil {
+		return "", eris.Wrap(err, "failed to marshal object")
+	}
+
+	log.Println("JSON Data: ", string(jsonData))
+
+	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		// Meaning that BPJS has a custom message for this case
+		// BPJS TOLD US to not meddle with the message, so we're just going to return it as is
+		// with no Filter...
+		if resp != "" {
+			return "", eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return "", eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	// BPJS Response with SEP Number
+	log.Println("Response: ", resp)
+
+	return resp, nil
+}
+
+func (s *SEPService) ApprovalSEPRequest(ctx context.Context, obj *models.SEPRequestCreate) (string, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodPost
+
+	baseUrl += "/Sep/aprovalSEP"
+
+	log.Println("URL: ", baseUrl)
+
+	jsonData, err := json.Marshal(models.BPJSRequest{
+		Request: &models.TSEP{
+			TSEP: obj,
+		},
+	})
+	if err != nil {
+		return "", eris.Wrap(err, "failed to marshal object")
+	}
+
+	log.Println("JSON Data: ", string(jsonData))
+
+	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		// Meaning that BPJS has a custom message for this case
+		// BPJS TOLD US to not meddle with the message, so we're just going to return it as is
+		// with no Filter...
+		if resp != "" {
+			return "", eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return "", eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	// BPJS Response with SEP Number
+	log.Println("Response: ", resp)
+
+	return resp, nil
+}
+
+func (s *SEPService) GetSEPRequests(ctx context.Context, month, year string) ([]*models.SEPRequest, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl = fmt.Sprintf(
+		"%s/Sep/persetujuanSEP/list/bulan/%s/tahun/%s",
+		baseUrl, month, year,
+	)
+
+	log.Println("URL: ", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return []*models.SEPRequest{}, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return []*models.SEPRequest{}, eris.New("a")
+	}
+
+	var sep models.SEPRequestResponse
+	if err = json.Unmarshal([]byte(resp), &sep); err != nil {
+		return nil, eris.Wrap(err, "failed to unmarshal response")
+	}
+
+	return sep.Lists, nil
 }

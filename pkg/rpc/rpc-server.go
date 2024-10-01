@@ -11,9 +11,12 @@ type BPJSService struct {
 }
 
 func InitRPCService() *BPJSService {
+
+	// Init Services
 	s := BPJSService{
 		ParticipantService: subservice.InitParticipantService(),
 		ReferenceService:   subservice.InitReferenceService(),
 	}
+
 	return &s
 }

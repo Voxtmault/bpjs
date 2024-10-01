@@ -188,3 +188,25 @@ type SEPGet struct {
 	ServiceAssessment  ReusableNote           `json:"assestmenPel"`
 	DigitalSEP         string                 `json:"eSEP"`
 }
+
+// SEPRequestCreate is used for creating SEP Backdate and Fingerprint Request to BPJS
+type SEPRequestCreate struct {
+	CardNumber  string `json:"noKartu"`
+	SEPDate     string `json:"tglSep"`
+	ServiceType string `json:"jnsPelayanan"`
+	RequestType string `json:"jnsPengajuan"`
+	Note        string `json:"keterangan"`
+	User        string `json:"user"`
+}
+
+type SEPRequest struct {
+	CardNumber      string `json:"noKartu"`
+	ParticipantName string `json:"nama"`
+	SEPDate         string `json:"tglSep"`
+	ServiceType     string `json:"jnsPelayanan"`
+	Approval        string `json:"persetujuan"`
+	Status          string `json:"status"`
+}
+type SEPRequestResponse struct {
+	Lists []*SEPRequest `json:"list"`
+}
