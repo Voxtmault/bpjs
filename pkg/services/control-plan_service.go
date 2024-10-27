@@ -58,8 +58,8 @@ func (s *ControlPlanService) GetViaSEP(ctx context.Context, sepNumber string) ([
 	return arrObj, nil
 }
 
-func (s *ControlPlanService) GetViaControlLetterNumber(ctx context.Context, letterNumber string) ([]*models.ControlPlanGetViaControllLetterNumber, error) {
-	arrObj := []*models.ControlPlanGetViaControllLetterNumber{}
+func (s *ControlPlanService) GetViaControlLetterNumber(ctx context.Context, letterNumber string) ([]*models.ControlPlanGetViaControlLetterNumber, error) {
+	arrObj := []*models.ControlPlanGetViaControlLetterNumber{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 

@@ -14,6 +14,7 @@ import (
 	intercept "github.com/voxtmault/bpjs-rs-module/pkg/interceptors"
 	"github.com/voxtmault/bpjs-rs-module/pkg/logger"
 	rpc "github.com/voxtmault/bpjs-rs-module/pkg/rpc"
+	"github.com/voxtmault/bpjs-rs-module/pkg/storage"
 	"github.com/voxtmault/bpjs-rs-module/pkg/utils"
 
 	pbBPJS "github.com/voxtmault/bpjs-service-proto/go"
@@ -28,9 +29,9 @@ func main() {
 	time.Local = timeLoc
 
 	// Adjust to your needs
-	// if err := storage.InitMariaDB(&AppConfig.DBConfig); err != nil {
-	// 	panic(err)
-	// }
+	if err := storage.InitMariaDB(&AppConfig.DBConfig); err != nil {
+		panic(err)
+	}
 	// if err := storage.InitRedis(&AppConfig.RedisConfig); err != nil {
 	// 	panic(err)
 	// }

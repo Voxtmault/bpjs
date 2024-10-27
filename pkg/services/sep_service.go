@@ -58,7 +58,7 @@ func (s *SEPService) InsertSEP(ctx context.Context, obj *models.SEPCreate) (*mod
 		}
 	}
 
-	// log.Println("Response: ", resp)
+	log.Println("Response: ", resp)
 
 	var sep models.SEPCreateResponse
 	if err = json.Unmarshal([]byte(resp), &sep); err != nil {

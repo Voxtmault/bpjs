@@ -40,7 +40,7 @@ func TestGetPoliclinics(t *testing.T) {
 		},
 	}
 
-	data, err := s.PoliclinicsReference(context.Background(), "Penyakit")
+	data, err := s.PoliclinicsReference(context.Background(), "IGD")
 	if err != nil {
 		t.Errorf("Error getting policlinics reference: %v", err)
 	}

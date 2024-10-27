@@ -10,7 +10,7 @@ type ControlPlan interface {
 
 	// Get are divided into 2 different functions since both of them returns different data models
 	GetViaSEP(ctx context.Context, sepNumber string) ([]*models.ControlPlanGetViaSEP, error)
-	GetViaControlLetterNumber(ctx context.Context, controlLetterNumber string) ([]*models.ControlPlanGetViaControllLetterNumber, error)
+	GetViaControlLetterNumber(ctx context.Context, controlLetterNumber string) ([]*models.ControlPlanGetViaControlLetterNumber, error)
 
 	// Used to get lists of control plans registered to a card number
 	GetControlPlanFromCardNumber(ctx context.Context, params *models.ControlPlansFromCardNumberParams) ([]*models.ControlPlans, error)
@@ -19,7 +19,7 @@ type ControlPlan interface {
 	// but it's safe to assume it's from the health care / hospital
 	GetControlPlans(ctx context.Context, params *models.ControlPlanParams) ([]*models.ControlPlans, error)
 
-	// Used to get how many controlls are assigned to the said clinic
+	// Used to get how many controls are assigned to the said clinic
 	GetClinicControlPlans(ctx context.Context, params *models.ClinicControlParams) ([]*models.ClinicControlPlans, error)
 
 	// Used to get the schedule of a doctor in a clinic

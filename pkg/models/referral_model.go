@@ -18,11 +18,11 @@ type Referral struct {
 }
 
 type ReferredSpecialist struct {
-	SpecalistCode string `json:"kodeSpesialis"`
-	SpecalistName string `json:"namaSpesialis"`
-	Capacity      string `json:"kapasitas"`
-	ReferallCount string `json:"jumlahRujukan"`
-	Percentage    string `json:"persentase"`
+	SpecialistCode string `json:"kodeSpesialis"`
+	SpecialistName string `json:"namaSpesialis"`
+	Capacity       string `json:"kapasitas"`
+	ReferralCount  string `json:"jumlahRujukan"`
+	Percentage     string `json:"persentase"`
 }
 type ReferredSpecialistResponse struct {
 	Lists []*ReferredSpecialist `json:"list"`
@@ -32,7 +32,7 @@ type ReferredFacility struct {
 	FacilityCode string `json:"kodeSarana"`
 	FacilityName string `json:"namaSarana"`
 }
-type ReferedFacilityResponse struct {
+type ReferredFacilityResponse struct {
 	Lists []*ReferredFacility `json:"list"`
 }
 
@@ -59,7 +59,7 @@ type ReferralCreateResponse struct {
 	Diagnosis              Reference              `json:"diagnosa"`
 	ReferralNumber         string                 `json:"noRujukan"`
 	Participant            SEPParticipantResponse `json:"peserta"`
-	ReferedPoliclinic      Reference              `json:"poliTujuan"`
+	ReferredPoliclinic     Reference              `json:"poliTujuan"`
 	ValidVisitDate         string                 `json:"tglBerlakuKunjungan"`
 	PlannedVisitDate       string                 `json:"tglRencanaKunjungan"`
 	ReferralDate           string                 `json:"tglRujukan"`
@@ -75,7 +75,7 @@ type OutgoingReferral struct {
 	ServiceType                string `json:"jnsPelayanan"`
 	SEPNumber                  string `json:"noSep"`
 	CardNumber                 string `json:"noKartu"`
-	ParticpantName             string `json:"nama"`
+	ParticipantName            string `json:"nama"`
 	ReferredHealthFacilityCode string `json:"ppkDirujuk"`
 	ReferredHealthFacilityName string `json:"namaPpkDirujuk"`
 }
@@ -114,7 +114,7 @@ type SpecialReferralDiagnosis struct {
 }
 type SpecialReferralCreate struct {
 	ReferralNumber string                      `json:"noRujukan"`
-	Diagnosises    []*SpecialReferralDiagnosis `json:"diagnosa"`
+	Diagnoses      []*SpecialReferralDiagnosis `json:"diagnosa"`
 	Procedures     []*Reference                `json:"procedure"`
 	User           string                      `json:"user"`
 }
@@ -153,7 +153,7 @@ type SpecialReferralDelete struct {
 // 	Source         string
 // }
 
-// Consts
+// Const
 const (
 	PCareSource    uint = 1
 	HospitalSource uint = 2

@@ -10,6 +10,26 @@ import (
 	"github.com/voxtmault/bpjs-rs-module/pkg/models"
 )
 
+func TestGetParticipantReferralByBPJSNumber(t *testing.T) {
+	// Load the config
+	config.New("/home/andy/go-projects/rs/bpjs/.env")
+
+	s := ReferralService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	data, err := s.GetParticipantReferralByBPJSNumber(context.Background(), "131106011024P000001", 1, false)
+	if err != nil {
+		t.Errorf("Error getting referral: %v", err)
+	}
+
+	for _, item := range data {
+		log.Println("Referral: ", item)
+	}
+}
+
 func TestGetParticipantReferralByReferralNumber(t *testing.T) {
 	// Load the config
 	config.New("/home/andy/go-projects/rs/bpjs/.env")
@@ -20,7 +40,7 @@ func TestGetParticipantReferralByReferralNumber(t *testing.T) {
 		},
 	}
 
-	data, err := s.GetParticipantReferralByReferralNumber(context.Background(), "0301R0011117B001126", 1)
+	data, err := s.GetParticipantReferralByReferralNumber(context.Background(), "131106011024P000001", 1)
 	if err != nil {
 		t.Errorf("Error getting referral: %v", err)
 	}
@@ -194,7 +214,7 @@ func TestCreateSpecialReferral(t *testing.T) {
 
 	data, err := s.CreateSpecialReferral(context.Background(), &models.SpecialReferralCreate{
 		ReferralNumber: "0301R0011117B001126",
-		Diagnosises: []*models.SpecialReferralDiagnosis{
+		Diagnoses: []*models.SpecialReferralDiagnosis{
 			{
 				Code: "P;N18",
 			},

@@ -63,6 +63,8 @@ func (s *ReferralService) GetParticipantReferralByReferralNumber(ctx context.Con
 		}
 	}
 
+	log.Println("result", resp)
+
 	var obj models.Referral
 	if err = json.Unmarshal([]byte(resp), &obj); err != nil {
 		return nil, eris.Wrap(err, "failed to unmarshal response")
@@ -159,7 +161,7 @@ func (s *ReferralService) GetReferedSpecialist(ctx context.Context, referedHealt
 }
 
 func (s *ReferralService) GetReferedFacilities(ctx context.Context, referedHealthFacilityCode string) ([]*models.ReferredFacility, error) {
-	arrObj := models.ReferedFacilityResponse{}
+	arrObj := models.ReferredFacilityResponse{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 

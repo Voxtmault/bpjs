@@ -63,8 +63,8 @@ func TestInsertSEP(t *testing.T) {
 	// }
 
 	sample := `{
-                 "noKartu":"0002017051402",
-                 "tglSep":"2024-09-26",
+                 "noKartu":"0002088008515",
+                 "tglSep":"2024-10-22",
                  "ppkPelayanan":"0182R009",
                  "jnsPelayanan":"2",
                  "klsRawat":{
@@ -75,15 +75,15 @@ func TestInsertSEP(t *testing.T) {
                  },
                  "noMR":"000001",
                  "rujukan":{
-                    "asalRujukan":"",
-                    "tglRujukan":"",
+                    "asalRujukan":"2",
+                    "tglRujukan":"2024-10-22",
                     "noRujukan":"",
-                    "ppkRujukan":""
+                    "ppkRujukan":"0182R009"
                  },
                  "catatan":"testinsert RJ",
                  "diagAwal":"E10",
                  "poli":{
-                    "tujuan":"INT",
+                    "tujuan":"IGD",
                     "eksekutif":"0"
                  },
                  "cob":{
@@ -117,7 +117,7 @@ func TestInsertSEP(t *testing.T) {
                     "noSurat":"",
                     "kodeDPJP":""
                  },
-                 "dpjpLayan":"31486",
+                 "dpjpLayan":"460285",
                  "noTelp":"081111111101",
                  "user":"Coba Ws"
               }`
@@ -245,7 +245,7 @@ func TestGetSEP(t *testing.T) {
 		},
 	}
 
-	data, err := s.GetSEP(context.Background(), "0001300759569")
+	data, err := s.GetSEP(context.Background(), "0182R0091024V000001")
 	if err != nil {
 		log.Println("Errors", err)
 		log.Println("Root Error", eris.Cause(err))

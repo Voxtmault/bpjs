@@ -5,26 +5,26 @@ type GeneralProvider struct {
 	ProviderName string `json:"nmProvider"`
 }
 
-type ReferingProvider struct {
-	ReferingProviderCode string `json:"kdProviderPerujuk"`
-	ReferingProviderName string `json:"nmProviderPerujuk"`
-	ReferalSource        string `json:"asalRujukan"`
-	ReferalNumber        string `json:"noRujukan"`
-	ReferalDate          string `json:"tglRujukan"`
+type ReferringProvider struct {
+	ReferringProviderCode string `json:"kdProviderPerujuk"`
+	ReferringProviderName string `json:"nmProviderPerujuk"`
+	ReferralSource        string `json:"asalRujukan"`
+	ReferralNumber        string `json:"noRujukan"`
+	ReferralDate          string `json:"tglRujukan"`
 }
 
 type ControlPlanGetViaSEP struct {
-	SEPNumber        string                 `json:"noSep"`
-	SEPDate          string                 `json:"tglSep"`
-	ServiceType      string                 `json:"jnsPelayanan"`
-	Policlinic       string                 `json:"poli"`
-	Diagnosis        string                 `json:"diagnosa"`
-	Participant      SEPParticipantResponse `json:"peserta"`
-	GeneralProvider  GeneralProvider        `json:"provUmum"`
-	ReferingProvider ReferingProvider       `json:"provPerujuk"`
+	SEPNumber         string                 `json:"noSep"`
+	SEPDate           string                 `json:"tglSep"`
+	ServiceType       string                 `json:"jnsPelayanan"`
+	Policlinic        string                 `json:"poli"`
+	Diagnosis         string                 `json:"diagnosa"`
+	Participant       SEPParticipantResponse `json:"peserta"`
+	GeneralProvider   GeneralProvider        `json:"provUmum"`
+	ReferringProvider ReferringProvider      `json:"provPerujuk"`
 }
 
-type ControlPlanGetViaControllLetterNumber struct {
+type ControlPlanGetViaControlLetterNumber struct {
 	ControlLetterNumber string               `json:"noSuratKontrol"`
 	ControlPlanDate     string               `json:"tglRencanaKontrol"`
 	IssuedDate          string               `json:"tglTerbit"`
@@ -53,11 +53,11 @@ type DoctorScheduleParams struct {
 }
 
 type ClinicControlPlans struct {
-	ClinicCode                string `json:"kodePoli"`
-	ClinicName                string `json:"namaPoli"`
-	Capacity                  string `json:"kapasitas"`
-	AssignedControlandReferal string `json:"jmlRencanaKontroldanRujukan"`
-	Percentage                string `json:"persentase"`
+	ClinicCode                 string `json:"kodePoli"`
+	ClinicName                 string `json:"namaPoli"`
+	Capacity                   string `json:"kapasitas"`
+	AssignedControlAndReferral string `json:"jmlRencanaKontroldanRujukan"`
+	Percentage                 string `json:"persentase"`
 }
 type ClinicControlPlansResponse struct {
 	Lists []*ClinicControlPlans `json:"list"`
@@ -73,8 +73,8 @@ type DoctorPracticeScheduleResponse struct {
 	Lists []*DoctorPracticeSchedule `json:"list"`
 }
 
-// ControlPlanCreate struct is used for both creating regular controll plan and
-// inpatient controll plan / inpatient care order due to it's similarity
+// ControlPlanCreate struct is used for both creating regular control plan and
+// inpatient control plan / inpatient care order due to it's similarity
 type ControlPlanCreate struct {
 	CardNumber  string `json:"noKartu,omitempty"`
 	SEPNumber   string `json:"noSEP,omitempty"`
@@ -84,8 +84,10 @@ type ControlPlanCreate struct {
 	User        string `json:"user"`
 }
 
-// ControlPlanCreateResponse struct is used for both parsing regular controll plan and
-// inpatient controll plan / inpatient care order response from BPJS API due to it's similarity
+// ControlPlanCreateResponse struct is used for both parsing regular control plan and
+// inpatient control plan / inpatient care order response from BPJS API due to it's similarity
+//
+// Note : SPRI -> Surat Perintah Rawat Inap
 type ControlPlanCreateResponse struct {
 	InpatientCareOrderNumber string `json:"noSPRI,omitempty"`
 	ControlLetterNumber      string `json:"noSuratKontrol,omitempty"`

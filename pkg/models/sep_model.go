@@ -10,12 +10,12 @@ type TreatmentClass struct {
 type SEPReference struct {
 	SourceReference          string `json:"asalRujukan"`
 	ReferenceDate            string `json:"tglRujukan"`
-	RefernceNumber           string `json:"noRujukan"`
+	ReferenceNumber          string `json:"noRujukan"`
 	ReferencedHealthFacility string `json:"ppkRujukan"`
 }
 
-type SEPPoliclinics struct {
-	PoliclinicCode string `json:"tujuan"` // Policlinics Code from BPJS
+type SEPPolyclinics struct {
+	PoliclinicCode string `json:"tujuan"` // Polyclinics Code from BPJS
 	Executive      string `json:"eksekutif"`
 }
 
@@ -23,8 +23,8 @@ type SEPCOB struct {
 	COB string `json:"cob"`
 }
 
-type SEPCatharacs struct {
-	Catharacs string `json:"katarak"`
+type SEPCataract struct {
+	Cataract string `json:"katarak"`
 }
 
 type Guarantee struct {
@@ -73,9 +73,9 @@ type SEPCreate struct {
 	Reference             SEPReference   `json:"rujukan"`
 	Note                  string         `json:"catatan"`
 	InitialDiagnosis      string         `json:"diagAwal"`
-	Policlinics           SEPPoliclinics `json:"poli"`
+	Polyclinics           SEPPolyclinics `json:"poli"`
 	COB                   SEPCOB         `json:"cob"`
-	Catharacs             SEPCatharacs   `json:"katarak"`
+	Cataracts             SEPCataract    `json:"katarak"`
 	Guarantee             Guarantee      `json:"jaminan"`
 	VisitationPurpose     string         `json:"tujuanKunj"`
 	ProcedureFlag         string         `json:"flagProcedure"`
@@ -119,13 +119,13 @@ type SEPCreateResponse struct {
 	Information           Information     `json:"informasi"`
 	ServiceType           string          `json:"jnsPelayanan"`
 	HealthCareSupportCode string          `json:"kdPenunjang"`
-	PoliclinicsCode       string          `json:"kdPoli"`
+	PolyclinicsCode       string          `json:"kdPoli"`
 	TreatmentClass        string          `json:"kelasRawat"`
 	ReferenceNumber       string          `json:"noRujukan"`
 	SEPNumber             string          `json:"noSep"`
 	Guarantor             string          `json:"penjamin"`
 	Participant           BPJSParticipant `json:"peserta"`
-	Policlinics           string          `json:"poli"`
+	Polyclinics           string          `json:"poli"`
 	PoliclinicExecutive   string          `json:"poliEksekutif"`
 	SEPDate               string          `json:"tglSep"`
 	VisitationPurpose     string          `json:"tujuanKunj"`
@@ -137,9 +137,9 @@ type SEPUpdate struct {
 	MRNumber         string         `json:"noMR"`
 	Note             string         `json:"catatan"`
 	InitialDiagnosis string         `json:"diagAwal"`
-	Policlinics      SEPPoliclinics `json:"poli"`
+	Polyclinics      SEPPolyclinics `json:"poli"`
 	COB              SEPCOB         `json:"cob"`
-	Catharacs        SEPCatharacs   `json:"katarak"`
+	Cataracts        SEPCataract    `json:"katarak"`
 	Guarantee        Guarantee      `json:"jaminan"`
 	ServiceDPJP      string         `json:"dpjpLayan"`
 	PhoneNum         string         `json:"noTelp"`
@@ -168,7 +168,7 @@ type SEPGet struct {
 	ServiceType        string                 `json:"jnsPelayanan"`
 	NursingClass       string                 `json:"kelasRawat"`
 	Diagnosis          string                 `json:"diagnosa"`
-	ReferalNumber      string                 `json:"noRujukan"`
+	ReferralNumber     string                 `json:"noRujukan"`
 	Policlinic         string                 `json:"poli"`
 	PoliExecutive      string                 `json:"poliEksekutif"`
 	Note               string                 `json:"catatan"`
@@ -181,7 +181,7 @@ type SEPGet struct {
 	TreatmentClass     TreatmentClass         `json:"klsRawat"`
 	Control            SEPControl             `json:"kontrol"`
 	COB                string                 `json:"cob"`
-	Catharacts         string                 `json:"katarak"`
+	Cataracts          string                 `json:"katarak"`
 	VisitationPurpose  ReusableNote           `json:"tujuanKunj"`
 	FlagProcedure      ReusableNote           `json:"flagProcedure"`
 	HealthCareCode     ReusableNote           `json:"kdPenunjang"`
