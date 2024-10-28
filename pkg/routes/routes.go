@@ -3,6 +3,7 @@ package routes
 import (
 	"strings"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -10,9 +11,20 @@ import (
 	"github.com/voxtmault/bpjs-rs-module/pkg/routes/sub_routes"
 )
 
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
+}
+
 func InitRoute() {
 	e := echo.New()
 	e.HideBanner = true
+
+	// Register Validator
+	e.Validator = &CustomValidator{validator: validator.New()}
 
 	// Registers Middleware
 	e.Use(middleware.Recover())
@@ -41,14 +53,14 @@ func InitRoute() {
 	bpjs := e.Group(config.GetConfig().AppRoot)
 
 	// Sub Routes
-	sub_routes.ControlPlan(bpjs)
-	sub_routes.InpatientOrder(bpjs)
-	sub_routes.Participant(bpjs)
-	sub_routes.Reference(bpjs)
-	sub_routes.Referral(bpjs)
-	sub_routes.SEP(bpjs)
-	sub_routes.Suppletion(bpjs)
-	sub_routes.Monitoring(bpjs)
-	sub_routes.FingerPrint(bpjs)
+	sub_routes.ControlPlan(e, bpjs)
+	sub_routes.InpatientOrder(e, bpjs)
+	sub_routes.Participant(e, bpjs)
+	sub_routes.Reference(e, bpjs)
+	sub_routes.Referral(e, bpjs)
+	sub_routes.SEP(e, bpjs)
+	sub_routes.Suppletion(e, bpjs)
+	sub_routes.Monitoring(e, bpjs)
+	sub_routes.FingerPrint(e, bpjs)
 
 }

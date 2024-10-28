@@ -20,3 +20,7 @@ func GetValidator() *validator.Validate {
 func RegisterCustomValidations(v *validator.Validate) {
 	v.RegisterValidation("specialDiag", models.ValidateSpecialReferralDiagnosisCode)
 }
+
+func MangleValidateResult(err error) map[string]string {
+	return nil
+}

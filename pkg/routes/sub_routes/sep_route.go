@@ -2,7 +2,7 @@ package sub_routes
 
 import "github.com/labstack/echo/v4"
 
-func SEP(group *echo.Group) {
+func SEP(e *echo.Echo, group *echo.Group) {
 
 	sep := group.Group("/sep")
 
@@ -27,7 +27,7 @@ func SEP(group *echo.Group) {
 	internalSep.DELETE("", nil)
 }
 
-func Suppletion(group *echo.Group) {
+func Suppletion(e *echo.Echo, group *echo.Group) {
 
 	suppletion := group.Group("/suppletion")
 

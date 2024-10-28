@@ -2,7 +2,7 @@ package sub_routes
 
 import "github.com/labstack/echo/v4"
 
-func Monitoring(group *echo.Group) {
+func Monitoring(e *echo.Echo, group *echo.Group) {
 	monitoring := group.Group("/monitoring")
 
 	monitoring.GET("/visit/:service_date/:service_type", nil)

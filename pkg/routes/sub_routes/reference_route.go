@@ -2,7 +2,7 @@ package sub_routes
 
 import "github.com/labstack/echo/v4"
 
-func Reference(group *echo.Group) {
+func Reference(e *echo.Echo, group *echo.Group) {
 
 	reference := group.Group("/reference")
 

@@ -2,7 +2,7 @@ package sub_routes
 
 import "github.com/labstack/echo/v4"
 
-func InpatientOrder(group *echo.Group) {
+func InpatientOrder(e *echo.Echo, group *echo.Group) {
 
 	inpatientOrder := group.Group("/inpatient_order")
 

@@ -2,7 +2,7 @@ package sub_routes
 
 import "github.com/labstack/echo/v4"
 
-func Referral(group *echo.Group) {
+func Referral(e *echo.Echo, group *echo.Group) {
 	referral := group.Group("/referral")
 
 	// Getter

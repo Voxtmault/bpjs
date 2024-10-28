@@ -1,9 +1,10 @@
 package sub_routes
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+)
 
-func ControlPlan(group *echo.Group) {
-
+func ControlPlan(e *echo.Echo, group *echo.Group) {
 	controlPlan := group.Group("/control_plan")
 
 	controlPlan.POST("", nil)
