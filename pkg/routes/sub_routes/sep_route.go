@@ -1,0 +1,37 @@
+package sub_routes
+
+import "github.com/labstack/echo/v4"
+
+func SEP(group *echo.Group) {
+
+	sep := group.Group("/sep")
+
+	// CRUD
+	sep.GET("/:sep_number", nil)
+	sep.POST("", nil)
+	sep.PUT("", nil)
+	sep.DELETE("", nil)
+
+	// Approval
+	sep.POST("/submission", nil)
+	sep.POST("/approval", nil)
+	sep.GET("/approval/:month/:year", nil)
+
+	// Utility
+	sep.PUT("/discharge_date", nil)
+	sep.GET("/get_discharged_sep/:month/:year/:filter", nil)
+
+	// Internal
+	internalSep := sep.Group("/internal")
+	internalSep.GET("/:sep_number", nil)
+	internalSep.DELETE("", nil)
+}
+
+func Suppletion(group *echo.Group) {
+
+	suppletion := group.Group("/suppletion")
+
+	// CRUD
+	suppletion.GET("/jasa_raharja/:service_date/:card_number", nil)
+	suppletion.POST("/accident_master_data/:card_number", nil)
+}
