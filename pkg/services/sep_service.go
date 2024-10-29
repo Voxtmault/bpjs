@@ -377,3 +377,177 @@ func (s *SEPService) UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpd
 
 	return sep, nil
 }
+
+func (s *SEPService) GetFingerPrintSEP(ctx context.Context, noKartu, tanggalPelayanan string) (*models.SEPGetFingerPrint, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl = fmt.Sprintf(
+		"%s/SEP/FingerPrint/Peserta/%s/TglPelayanan/%s",
+		baseUrl, noKartu, tanggalPelayanan,
+	)
+
+	log.Println("URL: ", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return &models.SEPGetFingerPrint{}, eris.Wrap(err, "failed to create http request")
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return &models.SEPGetFingerPrint{}, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return &models.SEPGetFingerPrint{}, eris.New("a")
+	}
+
+	var sep models.SEPGetFingerPrint
+	if err = json.Unmarshal([]byte(resp), &sep); err != nil {
+		return nil, eris.Wrap(err, "failed to unmarshal response")
+	}
+
+	return &sep, nil
+}
+
+func (s *SEPService) GetListFIngerPrintSEP(ctx context.Context, tanggalPelayanan string) ([]*models.SEPGetListFingerPrint, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl = fmt.Sprintf(
+		"%s/SEP/FingerPrint/List/Peserta/TglPelayanan/%s",
+		baseUrl, tanggalPelayanan,
+	)
+
+	log.Println("URL: ", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return []*models.SEPGetListFingerPrint{}, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return []*models.SEPGetListFingerPrint{}, eris.New("a")
+	}
+
+	var sep models.SEPFingerPrintResponse
+	if err = json.Unmarshal([]byte(resp), &sep); err != nil {
+		return nil, eris.Wrap(err, "failed to unmarshal response")
+	}
+
+	return sep.Lists, nil
+}
+
+func (s *SEPService) GetListRandomQuestion(ctx context.Context, noKartu, tanggalPelayanan string) ([]*models.SEPGetRandomQuestion, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl = fmt.Sprintf(
+		"%s/SEP/FingerPrint/randomquestion/faskesterdaftar/nokapst/%s/tglsep/%s",
+		baseUrl, noKartu, tanggalPelayanan,
+	)
+
+	log.Println("URL: ", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return []*models.SEPGetRandomQuestion{}, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return []*models.SEPGetRandomQuestion{}, eris.New("a")
+	}
+
+	var sep models.SEPRandomQuestionResponse
+	if err = json.Unmarshal([]byte(resp), &sep); err != nil {
+		return nil, eris.Wrap(err, "failed to unmarshal response")
+	}
+
+	return sep.Lists, nil
+}
+
+func (s *SEPService) PostRandomQuestion(ctx context.Context, obj *models.PostRequestRandomQuestion) (bool, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodPost
+
+	baseUrl = fmt.Sprintf(
+		"%s/SEP/FingerPrint/randomanswer",
+		baseUrl,
+	)
+
+	log.Println("URL: ", baseUrl)
+
+	jsonData, err := json.Marshal(models.BPJSRequest{
+		Request: &models.TSEP{
+			TSEP: obj,
+		},
+	})
+	if err != nil {
+		return false, eris.Wrap(err, "failed to marshal object")
+	}
+
+	log.Println("JSON Data: ", string(jsonData))
+
+	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return false, eris.Wrap(err, "failed to create http request")
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return false, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return false, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	// if resp == "" {
+	// 	return false, eris.New("a")
+	// }
+
+	// var sep map[string]interface{}
+	// if err = json.Unmarshal([]byte(resp), &sep); err != nil {
+	// 	return nil, eris.Wrap(err, "failed to unmarshal response")
+	// }
+
+	return false, nil
+}
+

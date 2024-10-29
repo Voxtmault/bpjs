@@ -345,6 +345,80 @@ func TestGetSEPRequests(t *testing.T) {
 	}
 }
 
+func TestGetRandomQuestion(t *testing.T) {
+	// Load the config
+	config.New("../../.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	data, err := s.GetListRandomQuestion(context.Background(), "0002088008515", "2024-10-29")
+	if err != nil {
+		log.Println("Errors", err)
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
+func TestGetFingerPrint(t *testing.T) {
+	// Load the config
+	config.New("../../.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	data, err := s.GetFingerPrintSEP(context.Background(), "0002088008515", "2024-10-22")
+	if err != nil {
+		log.Println("Errors", err)
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
+func TestPostRandomQuestiont(t *testing.T) {
+	// Load the config
+	config.New("../../.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	sample := `{
+      "noKartu": "0002340532179",
+      "tglSep": "2023-03-06",
+      "jenPel":"1",
+      "ppkPelSep": "0301R001",
+      "tglLahir": "",
+      "ppkPst": "09030300",
+      "user": "user"
+    }`
+	var obj models.PostRequestRandomQuestion
+	if err := json.Unmarshal([]byte(sample), &obj); err != nil {
+		t.Errorf("Error unmarshalling the object: %v", err)
+	}
+
+	data, err := s.PostRandomQuestion(context.Background(), &obj)
+	if err != nil {
+		log.Println("Errors", err)
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
 func TestUpdateTanggalPulang(t *testing.T) {
 	// Load the config
 	config.New("../../.env")

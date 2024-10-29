@@ -20,4 +20,6 @@ type Reference interface {
 	RegencyReference(ctx context.Context, kodeProvinsi string) ([]*models.Reference, error)          // Kabupaten
 	DistrictReference(ctx context.Context, kodeKota string) ([]*models.Reference, error)             // Kecamatan
 	AttendingPhysicianReference(ctx context.Context, kodeDokter string) ([]*models.Reference, error) // DPJP
+	DiagnosePRBReference(ctx context.Context) ([]*models.Reference, error)
+	MedicinePRBReference(ctx context.Context, medicineName string) ([]*models.Reference, error)
 }

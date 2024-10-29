@@ -220,3 +220,36 @@ type SEPUpdateTanggalPulangRequest struct {
 	NoLPManual       string `json:"noLPManual"`
 	User             string `json:"user"`
 }
+
+type SEPFingerPrintResponse struct {
+	Lists []*SEPGetListFingerPrint `json:"list"`
+}
+
+type SEPRandomQuestionResponse struct {
+	Lists []*SEPGetRandomQuestion `json:"faskes"`
+}
+
+type SEPGetFingerPrint struct {
+	Kode   string `json:"kode"`
+	Status string `json:"status"`
+}
+
+type SEPGetRandomQuestion struct {
+	Kode   string `json:"kode"`
+	Status string `json:"nama"`
+}
+
+type SEPGetListFingerPrint struct {
+	NoKartu string `json:"noKartu"`
+	NoSEP   string `json:"noSEP"`
+}
+
+type PostRequestRandomQuestion struct {
+	NoKartu   string `json:"noKartu"`
+	TglSep    string `json:"tglSep"`
+	JenPel    string `json:"jenPel"`
+	PpkPelSep string `json:"ppkPelSep"`
+	TglLahir  string `json:"tglLahir"`
+	PpkPst    string `json:"ppkPst"`
+	User      string `json:"user"`
+}

@@ -21,6 +21,9 @@ type SEP interface {
 
 	GetSEPRequests(ctx context.Context, month, year string) ([]*models.SEPRequest, error)
 	UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpdateTanggalPulangRequest) (interface{}, error)
+	GetFingerPrintSEP(ctx context.Context, noKartu, tanggalPelayanan string) (*models.SEPGetFingerPrint, error)
+	GetListFIngerPrintSEP(ctx context.Context, tanggalPelayanan string) ([]*models.SEPGetListFingerPrint, error)
+	GetListRandomQuestion(ctx context.Context, noKartu, tanggalPelayanan string) ([]*models.SEPGetRandomQuestion, error)
 }
 
 type SuplesiJasaRaharja interface {
