@@ -33,5 +33,5 @@ func Suppletion(e *echo.Echo, group *echo.Group) {
 
 	// CRUD
 	suppletion.GET("/jasa_raharja/:service_date/:card_number", nil)
-	suppletion.POST("/accident_master_data/:card_number", nil)
+	suppletion.GET("/accident_master_data/:card_number", nil)
 }
