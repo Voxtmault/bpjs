@@ -20,6 +20,7 @@ type SEP interface {
 	ApprovalSEPRequest(ctx context.Context, obj *models.SEPRequestCreate) (string, error)
 
 	GetSEPRequests(ctx context.Context, month, year string) ([]*models.SEPRequest, error)
+	UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpdateTanggalPulangRequest) (interface{}, error)
 }
 
 type SuplesiJasaRaharja interface {

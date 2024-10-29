@@ -92,7 +92,7 @@ func TestGetSpecialistReference(t *testing.T) {
 
 func TestGetDoctorReference(t *testing.T) {
 	// Load the config
-	config.New("/home/andy/go-projects/rs/bpjs/.env")
+	config.New("../../.env")
 
 	s := ReferenceService{
 		HttpHandler: &RequestHandlerService{
@@ -110,4 +110,46 @@ func TestGetDoctorReference(t *testing.T) {
 			log.Println("Doctors: ", item)
 		}
 	}
+}
+
+func TestDiagnosePRB(t *testing.T) {
+	// Load the config
+	config.New("../../.env")
+
+	s := ReferenceService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	data, err := s.DiagnosePRBReference(context.Background())
+	if err != nil {
+		t.Errorf("Error getting doctor reference: %v", err)
+	}
+
+	for _, item := range data {
+		log.Println("Diagnose: ", item)
+	}
+
+}
+
+func TestMedicinePRB(t *testing.T) {
+	// Load the config
+	config.New("../../.env")
+
+	s := ReferenceService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	data, err := s.MedicinePRBReference(context.Background(), "Analog Insulin Long Acting")
+	if err != nil {
+		t.Errorf("Error getting Medicine reference: %v", err)
+	}
+
+	for _, item := range data {
+		log.Println("Doctors: ", item)
+	}
+
 }

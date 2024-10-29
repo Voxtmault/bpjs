@@ -326,3 +326,54 @@ func (s *SEPService) GetSEPRequests(ctx context.Context, month, year string) ([]
 
 	return sep.Lists, nil
 }
+
+func (s *SEPService) UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpdateTanggalPulangRequest) (interface{}, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodPut
+
+	baseUrl = fmt.Sprintf(
+		"%s/SEP/2.0/updtglplg",
+		baseUrl,
+	)
+
+	log.Println("URL: ", baseUrl)
+
+	jsonData, err := json.Marshal(models.BPJSRequest{
+		Request: &models.TSEP{
+			TSEP: obj,
+		},
+	})
+	if err != nil {
+		return "", eris.Wrap(err, "failed to marshal object")
+	}
+
+	log.Println("JSON Data: ", string(jsonData))
+
+	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", eris.Wrap(err, "failed to create http request")
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return []*models.SEPRequest{}, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return []*models.SEPRequest{}, eris.New("a")
+	}
+
+	var sep map[string]interface{}
+	if err = json.Unmarshal([]byte(resp), &sep); err != nil {
+		return nil, eris.Wrap(err, "failed to unmarshal response")
+	}
+
+	return sep, nil
+}

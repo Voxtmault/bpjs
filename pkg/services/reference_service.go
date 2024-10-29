@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/rotisserie/eris"
 	"github.com/voxtmault/bpjs-rs-module/config"
@@ -177,7 +178,7 @@ func (s *ReferenceService) ProcedureReference(ctx context.Context, procedure str
 	method := http.MethodGet
 
 	// Uses ICD-9 procedure code
-	baseUrl += "/referensi/procedure/" + procedure
+	baseUrl += "/referensi/procedure/" + procedure 	
 
 	// log.Println("URL: ", baseUrl)
 
@@ -475,6 +476,80 @@ func (s *ReferenceService) AttendingPhysicianReference(ctx context.Context, kode
 	// log.Println("URL: ", baseUrl)
 
 	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
+	}
+
+	return arrObj.List, nil
+}
+
+// DiagnosePRB
+func (s *ReferenceService) DiagnosePRBReference(ctx context.Context) ([]*models.Reference, error) {
+	arrObj := models.ListReference{}
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl += "/referensi/diagnosaprb"
+
+	// log.Println("URL: ", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
+	}
+
+	return arrObj.List, nil
+}
+
+// MedicinePRB
+func (s *ReferenceService) MedicinePRBReference(ctx context.Context, medicineName string) ([]*models.Reference, error) {
+	arrObj := models.ListReference{}
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl += "/referensi/obatprb/" + medicineName
+	urlreq, _ := url.Parse(baseUrl)
+	// log.Println("URL: ", baseUrl)
+
+	req, err := http.NewRequest(method, urlreq.String(), nil)
 	if err != nil {
 		return nil, eris.Wrap(err, "failed to create http request")
 	}

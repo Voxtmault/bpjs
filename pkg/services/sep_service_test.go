@@ -237,7 +237,7 @@ func TestDeleteSEP(t *testing.T) {
 
 func TestGetSEP(t *testing.T) {
 	// Load the config
-	config.New("/home/andy/go-projects/rs/bpjs/.env")
+	config.New("../../.env")
 
 	s := SEPService{
 		HttpHandler: &RequestHandlerService{
@@ -336,6 +336,40 @@ func TestGetSEPRequests(t *testing.T) {
 	}
 
 	data, err := s.GetSEPRequests(context.Background(), "08", "2024")
+	if err != nil {
+		log.Println("Errors", err)
+		log.Println("Root Error", eris.Cause(err))
+		t.Errorf("Error creating SEP: %v", err)
+	} else {
+		log.Println("Data: ", data)
+	}
+}
+
+func TestUpdateTanggalPulang(t *testing.T) {
+	// Load the config
+	config.New("../../.env")
+
+	s := SEPService{
+		HttpHandler: &RequestHandlerService{
+			Security: &BPJSSecurityService{},
+		},
+	}
+
+	sample := `{ 
+	"noSep": "0182R0091024V000001",
+    "statusPulang":"1",
+    "noSuratMeninggal":"",
+    "tglMeninggal":"",
+    "tglPulang":"2024-10-25",
+    "noLPManual":"1234",
+    "user":"BudiSetiawan"
+}`
+	var obj models.SEPUpdateTanggalPulangRequest
+	if err := json.Unmarshal([]byte(sample), &obj); err != nil {
+		t.Errorf("Error unmarshalling the object: %v", err)
+	}
+
+	data, err := s.UpdateTanggalPulang(context.Background(), &obj)
 	if err != nil {
 		log.Println("Errors", err)
 		log.Println("Root Error", eris.Cause(err))

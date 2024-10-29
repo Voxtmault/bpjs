@@ -32,7 +32,7 @@ func TestGetParticipantReferralByBPJSNumber(t *testing.T) {
 
 func TestGetParticipantReferralByReferralNumber(t *testing.T) {
 	// Load the config
-	config.New("/home/andy/go-projects/rs/bpjs/.env")
+	config.New("../../.env")
 
 	s := ReferralService{
 		HttpHandler: &RequestHandlerService{

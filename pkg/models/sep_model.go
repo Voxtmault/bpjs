@@ -210,3 +210,13 @@ type SEPRequest struct {
 type SEPRequestResponse struct {
 	Lists []*SEPRequest `json:"list"`
 }
+
+type SEPUpdateTanggalPulangRequest struct {
+	NoSep            string `json:"noSep"`
+	StatusPulang     string `json:"statusPulang"`
+	NoSuratMeninggal string `json:"noSuratMeninggal"`
+	TglMeninggal     string `json:"tglMeninggal"`
+	TglPulang        string `json:"tglPulang"`
+	NoLPManual       string `json:"noLPManual"`
+	User             string `json:"user"`
+}
