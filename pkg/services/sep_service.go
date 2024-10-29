@@ -81,7 +81,7 @@ func (s *SEPService) UpdateSEP(ctx context.Context, obj *models.SEPUpdate) (stri
 
 	baseUrl += "/SEP/2.0/update"
 
-	log.Println("URL: ", baseUrl)
+	slog.Debug("sep_service -> UpdateSEP", "base url", baseUrl)
 
 	jsonData, err := json.Marshal(models.BPJSRequest{
 		Request: &models.TSEP{
@@ -91,8 +91,6 @@ func (s *SEPService) UpdateSEP(ctx context.Context, obj *models.SEPUpdate) (stri
 	if err != nil {
 		return "", eris.Wrap(err, "failed to marshal object")
 	}
-
-	log.Println("JSON Data: ", string(jsonData))
 
 	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -107,7 +105,7 @@ func (s *SEPService) UpdateSEP(ctx context.Context, obj *models.SEPUpdate) (stri
 		// BPJS TOLD US to not meddle with the message, so we're just going to return it as is
 		// with no Filter...
 		if resp != "" {
-			return "", eris.Wrap(eris.New(resp), "BPJS Message")
+			return "message from bpjs", eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return "", eris.Wrap(err, "failed to send http request")
 		}
@@ -115,8 +113,6 @@ func (s *SEPService) UpdateSEP(ctx context.Context, obj *models.SEPUpdate) (stri
 
 	// BPJS Response with SEP Number
 	// TODO find out if the SEP Number from the BPJS Response is the same or different, since we can't test BPJS SEP Service because we do not have SIO
-
-	log.Println("Response: ", resp)
 
 	return resp, nil
 }
@@ -127,7 +123,7 @@ func (s *SEPService) DeleteSEP(ctx context.Context, obj *models.SEPDelete) (stri
 
 	baseUrl += "/SEP/2.0/delete"
 
-	log.Println("URL: ", baseUrl)
+	slog.Debug("sep_service -> DeleteSEP", "base url", baseUrl)
 
 	jsonData, err := json.Marshal(models.BPJSRequest{
 		Request: &models.TSEP{
@@ -137,8 +133,6 @@ func (s *SEPService) DeleteSEP(ctx context.Context, obj *models.SEPDelete) (stri
 	if err != nil {
 		return "", eris.Wrap(err, "failed to marshal object")
 	}
-
-	log.Println("JSON Data: ", string(jsonData))
 
 	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -153,7 +147,7 @@ func (s *SEPService) DeleteSEP(ctx context.Context, obj *models.SEPDelete) (stri
 		// BPJS TOLD US to not meddle with the message, so we're just going to return it as is
 		// with no Filter...
 		if resp != "" {
-			return "", eris.Wrap(eris.New(resp), "BPJS Message")
+			return "message from bpjs", eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return "", eris.Wrap(err, "failed to send http request")
 		}
@@ -161,9 +155,6 @@ func (s *SEPService) DeleteSEP(ctx context.Context, obj *models.SEPDelete) (stri
 
 	// BPJS Response with SEP Number
 	// TODO find out if the SEP Number from the BPJS Response is the same or different, since we can't test BPJS SEP Service because we do not have SIO
-
-	log.Println("Response: ", resp)
-
 	return resp, nil
 }
 
@@ -334,7 +325,7 @@ func (s *SEPService) GetSEPRequests(ctx context.Context, month, year string) ([]
 	return sep.Lists, nil
 }
 
-func (s *SEPService) UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpdateTanggalPulangRequest) (interface{}, error) {
+func (s *SEPService) UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpdateTanggalPulangRequest) error {
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodPut
 
@@ -343,7 +334,7 @@ func (s *SEPService) UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpd
 		baseUrl,
 	)
 
-	log.Println("URL: ", baseUrl)
+	slog.Debug("sep_service -> UpdateTanggalPulang", "base url", baseUrl)
 
 	jsonData, err := json.Marshal(models.BPJSRequest{
 		Request: &models.TSEP{
@@ -351,38 +342,70 @@ func (s *SEPService) UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpd
 		},
 	})
 	if err != nil {
-		return "", eris.Wrap(err, "failed to marshal object")
+		return eris.Wrap(err, "failed to marshal object")
 	}
-
-	log.Println("JSON Data: ", string(jsonData))
 
 	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
-		return "", eris.Wrap(err, "failed to create http request")
+		return eris.Wrap(err, "failed to create http request")
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return []*models.SEPRequest{}, eris.Wrap(eris.New(resp), "BPJS Message")
+			return eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	// For this case, BPJS does not return any response
+
+	return nil
+}
+
+func (s *SEPService) GetDischargedSEP(ctx context.Context, month, year, filter string) ([]*models.DischargedSEP, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	obj := models.DischargedSEPWrapper{
+		List: []*models.DischargedSEP{},
+	}
+
+	baseUrl = fmt.Sprintf(
+		"%s/Sep/updtglplg/list/bulan/%s/tahun/%s/%s",
+		baseUrl, month, year, filter,
+	)
+
+	slog.Debug("sep_service -> GetDischargedSEP", "base url", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return obj.List, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
 	}
 
-	log.Println("Response: ", resp)
+	slog.Debug("sep_service -> GetDischargedSEP", "response", resp)
 
 	if resp == "" {
-		return []*models.SEPRequest{}, eris.New("a")
+		return obj.List, eris.New("a")
 	}
 
-	var sep map[string]interface{}
-	if err = json.Unmarshal([]byte(resp), &sep); err != nil {
+	if err = json.Unmarshal([]byte(resp), &obj); err != nil {
 		return nil, eris.Wrap(err, "failed to unmarshal response")
 	}
 
-	return sep, nil
+	return obj.List, nil
 }
 
 func (s *SEPService) GetFingerPrintSEP(ctx context.Context, noKartu, tanggalPelayanan string) (*models.SEPGetFingerPrint, error) {
@@ -425,7 +448,7 @@ func (s *SEPService) GetFingerPrintSEP(ctx context.Context, noKartu, tanggalPela
 	return &sep, nil
 }
 
-func (s *SEPService) GetListFIngerPrintSEP(ctx context.Context, tanggalPelayanan string) ([]*models.SEPGetListFingerPrint, error) {
+func (s *SEPService) GetListFingerPrintSEP(ctx context.Context, tanggalPelayanan string) ([]*models.SEPGetListFingerPrint, error) {
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
@@ -558,3 +581,42 @@ func (s *SEPService) PostRandomQuestion(ctx context.Context, obj *models.PostReq
 	return false, nil
 }
 
+func (s *SEPService) GetInternalSEP(ctx context.Context, sepNumber string) ([]*models.InternalSEP, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodPost
+
+	baseUrl = fmt.Sprintf(
+		"%s/SEP/Internal/%s",
+		baseUrl, sepNumber,
+	)
+
+	slog.Debug("sep_service -> GetInternalSEP", "base url", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return []*models.InternalSEP{}, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return nil, eris.New("something went wrong")
+	}
+
+	var sep models.InternalSEPWrapper
+	if err = json.Unmarshal([]byte(resp), &sep); err != nil {
+		return nil, eris.Wrap(err, "failed to unmarshal response")
+	}
+
+	return sep.List, nil
+}

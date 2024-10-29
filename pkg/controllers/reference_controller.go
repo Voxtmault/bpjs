@@ -351,3 +351,47 @@ func (s ReferenceController) GetDistrict(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, res)
 }
+
+func (s ReferenceController) GetPRBDiagnosis(c echo.Context) error {
+	var res Response
+
+	var err error
+	res.Data, err = s.service.DiagnosePRBReference(c.Request().Context())
+	if err != nil {
+		if res.Data != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		} else {
+			slog.Error("reference_controller -> GetPRBDiagnosis", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (s ReferenceController) GetPRBMedicine(c echo.Context) error {
+	var res Response
+
+	generalName := c.Param("general_name")
+	if generalName == "" || generalName == ":general_name" {
+		res.Message = "nama obat generik tidak boleh kosong"
+		return echo.NewHTTPError(http.StatusBadRequest, res)
+	}
+
+	var err error
+	res.Data, err = s.service.MedicinePRBReference(c.Request().Context(), generalName)
+	if err != nil {
+		if res.Data != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		} else {
+			slog.Error("reference_controller -> GetPRBMedicine", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}

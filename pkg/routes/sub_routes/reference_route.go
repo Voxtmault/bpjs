@@ -33,8 +33,8 @@ func Reference(e *echo.Echo, group *echo.Group) {
 	reference.GET("/doctor/service/:service_type/:service_date/:specialist_code", referenceController.GetAttendingPhysicians)
 
 	// Reconciliation Program / Program Rujuk Balik
-	reference.GET("/prb/diagnosis", nil)
-	reference.GET("/prb/medicine/:general_name", nil)
+	reference.GET("/prb/diagnosis", referenceController.GetPRBDiagnosis)
+	reference.GET("/prb/medicine/:general_name", referenceController.GetPRBMedicine)
 
 	// International Classification
 	reference.GET("/diagnosis/:icd_x_code", referenceController.GetDiagnosis)

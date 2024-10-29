@@ -21,18 +21,18 @@ func SEP(e *echo.Echo, group *echo.Group) {
 
 	// CRUD
 	sep.GET("/:sep_number", sepController.Get)
-	sep.POST("", nil)
-	sep.PUT("", nil)
-	sep.DELETE("", nil)
+	sep.POST("", sepController.Post)
+	sep.PUT("", sepController.Put)
+	sep.DELETE("", sepController.Delete)
 
-	// Approval
+	// Approval, Usually for backdate SEP
 	sep.POST("/submission", nil)
 	sep.POST("/approval", nil)
 	sep.GET("/approval/:month/:year", nil)
 
 	// Utility
-	sep.PUT("/discharge_date", nil)
-	sep.GET("/get_discharged_sep/:month/:year/:filter", nil)
+	sep.PUT("/discharge_date", sepController.UpdateDischargeDate)
+	sep.GET("/get_discharged_sep/:month/:year/:filter", sepController.GetDischargedSEP)
 
 	// Internal
 	internalSep := sep.Group("/internal")

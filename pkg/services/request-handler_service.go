@@ -84,6 +84,11 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 		return response.MetaData.Message, eris.New(response.MetaData.Code)
 	}
 
+	// For some cases, the response is empty or null
+	if response.Response == "" {
+		return "", nil
+	}
+
 	// Decrypt the response
 	raw, err := s.Security.DecryptResponse(ctx, timeStamp, response.Response)
 	if err != nil {

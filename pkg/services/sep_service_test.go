@@ -385,7 +385,7 @@ func TestGetFingerPrint(t *testing.T) {
 	}
 }
 
-func TestPostRandomQuestiont(t *testing.T) {
+func TestPostRandomQuestion(t *testing.T) {
 	// Load the config
 	config.New("../../.env")
 
@@ -435,7 +435,7 @@ func TestUpdateTanggalPulang(t *testing.T) {
     "noSuratMeninggal":"",
     "tglMeninggal":"",
     "tglPulang":"2024-10-25",
-    "noLPManual":"1234",
+    "noLPManual":"",
     "user":"BudiSetiawan"
 }`
 	var obj models.SEPUpdateTanggalPulangRequest
@@ -443,12 +443,10 @@ func TestUpdateTanggalPulang(t *testing.T) {
 		t.Errorf("Error unmarshalling the object: %v", err)
 	}
 
-	data, err := s.UpdateTanggalPulang(context.Background(), &obj)
+	err := s.UpdateTanggalPulang(context.Background(), &obj)
 	if err != nil {
 		log.Println("Errors", err)
 		log.Println("Root Error", eris.Cause(err))
 		t.Errorf("Error creating SEP: %v", err)
-	} else {
-		log.Println("Data: ", data)
 	}
 }

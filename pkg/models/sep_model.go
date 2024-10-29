@@ -224,6 +224,25 @@ type SEPUpdateTanggalPulangRequest struct {
 	User             string `json:"user"`
 }
 
+type DischargedSEP struct {
+	SEPNumber          string `json:"noSep"`
+	UpdatingSEPNumber  string `json:"noSepUpdating"`
+	ServiceType        string `json:"jnsPelayanan"`
+	HealthFacilityCode string `json:"ppkTujuan"`
+	CardNumber         string `json:"noKartu"`
+	ParticipantName    string `json:"nama"`
+	ServiceDate        string `json:"tglSep"`
+	DischargedDate     string `json:"tglPulang"`
+	Status             string `json:"status"`
+	DateOfDeath        string `json:"tglMeninggal"`
+	LetterNumber       string `json:"noSurat"`
+	Note               string `json:"keterangan"`
+	User               string `json:"user"`
+}
+type DischargedSEPWrapper struct {
+	List []*DischargedSEP `json:"list"`
+}
+
 type SEPFingerPrintResponse struct {
 	Lists []*SEPGetListFingerPrint `json:"list"`
 }
@@ -255,4 +274,39 @@ type PostRequestRandomQuestion struct {
 	TglLahir  string `json:"tglLahir"`
 	PpkPst    string `json:"ppkPst"`
 	User      string `json:"user"`
+}
+
+type InternalSEP struct {
+	// To be honest, i feel like the first 2 are the same variables, it's just that i feel like
+	// BPJS forgot that these exists and decided to just eye ball it. Man talk about spaghetti code
+	// And please for the love of god, use a consistent json naming scheme will you, almost everything is using camelCase
+	// and now, what is this? snake_case? what is this? python?
+	TargetReferralPolyclinic     string `json:"tujuanrujuk"`
+	TargetReferralPolyclinicCode string `json:"kdpolituj"`
+	TargetReferralPolyclinicName string `json:"namatujuanrujuk"`
+	SourcePolyName               string `json:"nmpoliasal"`
+	SourcePolyCode               string `json:"kdpoliasal"`
+	InternalServiceDate          string `json:"tglrujukinternal"`
+	SEPNumber                    string `json:"nosep"`
+	ReferredSEPNumber            string `json:"nosepref"`
+	HealthFacilityCode           string `json:"ppkpelsep"`
+	NoKapSt                      string `json:"nokapst"`
+	ServiceDate                  string `json:"tglsep"`
+	LetterNumber                 string `json:"nosurat"`
+	InternalFlag                 string `json:"flaginternal"`
+	SupportCode                  string `json:"kdpenunjang"`
+	SupportName                  string `json:"nmpenunjang"`
+	Diagnosis                    string `json:"diagppk"`
+	DiagnosisName                string `json:"nmdiag"`
+	DoctorCode                   string `json:"kodedokter"`
+	DoctorName                   string `json:"nmdokter"`
+	FlagProcedure                string `json:"flagprocedure"`
+	ConsultationOption           string `json:"opsikonsul"`
+	SEPFlag                      string `json:"flagsep"`
+	FUser                        string `json:"fuser"`
+	FDate                        string `json:"fdate"`
+}
+type InternalSEPWrapper struct {
+	List  []*InternalSEP `json:"list"`
+	Count string         `json:"count"`
 }
