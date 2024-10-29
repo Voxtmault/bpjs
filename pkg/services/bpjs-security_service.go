@@ -22,6 +22,10 @@ type BPJSSecurityService struct {
 
 var _ interfaces.BPJSSecurity = &BPJSSecurityService{}
 
+func NewBPJSSecurityService() *BPJSSecurityService {
+	return &BPJSSecurityService{}
+}
+
 func (s *BPJSSecurityService) CreateSignature(ctx context.Context, timestamp int64) (string, error) {
 	// Explanations
 	// 1. Signature is created using HMAC-SHA256

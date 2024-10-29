@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"log/slog"
 	"net/http"
 	"net/url"
 
@@ -18,6 +19,12 @@ type ReferenceService struct {
 }
 
 var _ interfaces.Reference = &ReferenceService{}
+
+func NewReferenceService(httpHandler interfaces.RequestHandler) *ReferenceService {
+	return &ReferenceService{
+		HttpHandler: httpHandler,
+	}
+}
 
 func (s *ReferenceService) DiagnoseReference(ctx context.Context, diagnosisCode string) ([]*models.Reference, error) {
 	arrObj := models.DiagnosisReference{}
@@ -60,7 +67,8 @@ func (s *ReferenceService) DiagnoseReference(ctx context.Context, diagnosisCode 
 	return arrObj.Diagnosis, nil
 }
 
-func (s *ReferenceService) DoctorReference(ctx context.Context, jenisPelayanan, tglPelayanan, kodeSPesialis string) ([]*models.Reference, error) {
+// DPJP
+func (s *ReferenceService) AttendingPhysicianReference(ctx context.Context, jenisPelayanan, tglPelayanan, kodeSPesialis string) ([]*models.Reference, error) {
 	arrObj := models.DoctorReference{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
@@ -96,7 +104,7 @@ func (s *ReferenceService) DoctorReference(ctx context.Context, jenisPelayanan, 
 	return arrObj.Doctor, nil
 }
 
-func (s *ReferenceService) PoliclinicsReference(ctx context.Context, poliCode string) ([]*models.Reference, error) {
+func (s *ReferenceService) PolyclinicsReference(ctx context.Context, poliCode string) ([]*models.Reference, error) {
 	arrObj := models.PoliReference{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
@@ -107,7 +115,7 @@ func (s *ReferenceService) PoliclinicsReference(ctx context.Context, poliCode st
 		baseUrl += "/" + poliCode
 	}
 
-	// log.Println("URL: ", baseUrl)
+	slog.Debug("reference_service -> PolyclinicsReference", "url", baseUrl)
 
 	req, err := http.NewRequest(method, baseUrl, nil)
 	if err != nil {
@@ -123,7 +131,7 @@ func (s *ReferenceService) PoliclinicsReference(ctx context.Context, poliCode st
 		}
 	}
 
-	log.Println("Response: ", resp)
+	slog.Debug("reference_service -> PolyclinicsReference", "response", resp)
 
 	if resp == "" {
 		return arrObj.Poli, nil
@@ -354,6 +362,42 @@ func (s *ReferenceService) PostDischargeReference(ctx context.Context) ([]*model
 	return arrObj.List, nil
 }
 
+func (s *ReferenceService) TreatmentRoomReference(ctx context.Context) ([]*models.Reference, error) {
+	arrObj := models.ListReference{}
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl += "/referensi/ruangrawat"
+
+	slog.Debug("reference_service -> TreatmentRoomReference", "url", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to create http request")
+	}
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return arrObj.List, eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return nil, eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return arrObj.List, nil
+	} else {
+		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+			return nil, eris.Wrap(err, "failed to unmarshal response")
+		}
+	}
+
+	return arrObj.List, nil
+}
+
 // Provinsi
 func (s *ReferenceService) ProvinceReference(ctx context.Context) ([]*models.Reference, error) {
 	arrObj := models.ListReference{}
@@ -465,8 +509,8 @@ func (s *ReferenceService) DistrictReference(ctx context.Context, kodeKota strin
 	return arrObj.List, nil
 }
 
-// DPJP
-func (s *ReferenceService) AttendingPhysicianReference(ctx context.Context, kodeDokter string) ([]*models.Reference, error) {
+// Dokter, Untuk Lembar Pengajuan Klaim
+func (s *ReferenceService) DoctorReference(ctx context.Context, kodeDokter string) ([]*models.Reference, error) {
 	arrObj := models.ListReference{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet

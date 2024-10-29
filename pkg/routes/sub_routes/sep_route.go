@@ -1,13 +1,26 @@
 package sub_routes
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+	"github.com/voxtmault/bpjs-rs-module/pkg/controllers"
+	"github.com/voxtmault/bpjs-rs-module/pkg/services"
+)
 
 func SEP(e *echo.Echo, group *echo.Group) {
 
 	sep := group.Group("/sep")
 
+	sepController := controllers.NewSEPController(
+		services.NewSEPService(
+			services.NewBPJSRequestHandlerService(
+				services.NewBPJSSecurityService(),
+			),
+		),
+		e.Validator,
+	)
+
 	// CRUD
-	sep.GET("/:sep_number", nil)
+	sep.GET("/:sep_number", sepController.Get)
 	sep.POST("", nil)
 	sep.PUT("", nil)
 	sep.DELETE("", nil)

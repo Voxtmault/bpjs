@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/rotisserie/eris"
@@ -19,6 +20,12 @@ type SEPService struct {
 }
 
 var _ interfaces.SEP = &SEPService{}
+
+func NewSEPService(httpHandler interfaces.RequestHandler) *SEPService {
+	return &SEPService{
+		HttpHandler: httpHandler,
+	}
+}
 
 func (s *SEPService) InsertSEP(ctx context.Context, obj *models.SEPCreate) (*models.SEPCreateResponse, error) {
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
@@ -60,12 +67,12 @@ func (s *SEPService) InsertSEP(ctx context.Context, obj *models.SEPCreate) (*mod
 
 	log.Println("Response: ", resp)
 
-	var sep models.SEPCreateResponse
+	var sep models.SEPCreateResponseWrapper
 	if err = json.Unmarshal([]byte(resp), &sep); err != nil {
 		return nil, eris.Wrap(err, "failed to unmarshal response")
 	}
 
-	return &sep, nil
+	return sep.SEP, nil
 }
 
 func (s *SEPService) UpdateSEP(ctx context.Context, obj *models.SEPUpdate) (string, error) {
@@ -166,7 +173,7 @@ func (s *SEPService) GetSEP(ctx context.Context, sepNumber string) (*models.SEPG
 
 	baseUrl += "/SEP/" + sepNumber
 
-	log.Println("URL: ", baseUrl)
+	slog.Debug("get sep", "url", baseUrl)
 
 	req, err := http.NewRequest(method, baseUrl, nil)
 	if err != nil {
@@ -178,7 +185,7 @@ func (s *SEPService) GetSEP(ctx context.Context, sepNumber string) (*models.SEPG
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return &models.SEPGet{}, eris.Wrap(eris.New(resp), "BPJS Message")
+			return &models.SEPGet{}, eris.Wrap(err, "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -187,7 +194,7 @@ func (s *SEPService) GetSEP(ctx context.Context, sepNumber string) (*models.SEPG
 	log.Println("Response: ", resp)
 
 	if resp == "" {
-		return &models.SEPGet{}, eris.New("a")
+		return &models.SEPGet{}, eris.New("something went wrong")
 	}
 
 	var sep models.SEPGet

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -20,6 +20,12 @@ type RequestHandlerService struct {
 }
 
 var _ interfaces.RequestHandler = &RequestHandlerService{}
+
+func NewBPJSRequestHandlerService(security interfaces.BPJSSecurity) *RequestHandlerService {
+	return &RequestHandlerService{
+		Security: security,
+	}
+}
 
 func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Request) (string, error) {
 	cfg := config.GetConfig().BPJSConfig
@@ -53,27 +59,27 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 	}
 	defer resp.Body.Close()
 
-	log.Println("Status Code: ", resp.StatusCode)
+	slog.Debug("request handler -> SendRequest", "received http status code", resp.StatusCode)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", eris.Wrap(err, "failed to read response body")
 	}
 
-	// log.Println("Response: ", string(body))
-
-	// Unmarshall into response obj
+	// Unmarshal into response obj
 	var response models.BPJSResponse
 	if err := json.Unmarshal(body, &response); err != nil {
-		return "", eris.Wrap(err, "failed to unmarshall response")
+		return "", eris.Wrap(err, "failed to unmarshal response")
 	}
 
 	if response.MetaData.Code != "200" {
-		log.Println("Response: ", response.MetaData)
+		slog.Debug("request handler -> SendRequest", "received response", response.MetaData)
 		// If the response code is not 200, return the error message
 
 		// If the response message is "Data Tidak Ada" or something similar, you can treat this as a 404 response code
 		// IDK why they insists in returning code 201 :/
+
+		// [Update] they will occasionally use the MetaData.Code as the error message, it's weird man, i tell you
 
 		return response.MetaData.Message, eris.New(response.MetaData.Code)
 	}
