@@ -19,3 +19,8 @@ type IcareMetaData struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
+
+type AplicaresResponse struct {
+	MetaData *IcareMetaData         `json:"metaData"`
+	Response map[string]interface{} `json:"response"`
+}

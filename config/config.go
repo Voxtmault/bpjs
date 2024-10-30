@@ -69,11 +69,11 @@ type FileHandlingConfig struct {
 }
 
 type BPJSConfig struct {
-	BPJSURL       string
-	VClaimPath    string
-	AplicaresPath string
-	ICarePath     string
-
+	BPJSURL        string
+	AplicaresUrl   string
+	VClaimPath     string
+	AplicaresPath  string
+	ICarePath      string
 	ConsumerID     string
 	ConsumerSecret string
 	Userkey        string
@@ -158,8 +158,10 @@ func New(envPath string) *AppConfig {
 		},
 		BPJSConfig: BPJSConfig{
 			BPJSURL:        getEnv("BPJS_URL", ""),
+			AplicaresUrl:   getEnv("APLICARES_URL", ""),
 			VClaimPath:     getEnv("VCLAIM_PATH", ""),
 			ICarePath:      getEnv("ICARE_PATH", ""),
+			AplicaresPath:  getEnv("APLICARES_PATH", ""),
 			ConsumerID:     getEnv("CONSUMER_ID", ""),
 			ConsumerSecret: getEnv("CONSUMER_SECRET", ""),
 			Userkey:        getEnv("USER_KEY", ""),

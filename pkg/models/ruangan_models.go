@@ -10,7 +10,7 @@ type AplicaresRequestResponse struct {
 }
 
 type AplicaresRuanganResponse struct {
-	Lists []*Ruangan `json:"list"`
+	Lists []*RuanganResponse `json:"list"`
 }
 
 type Ruangan struct {
@@ -22,4 +22,15 @@ type Ruangan struct {
 	TersediaPria       string `json:"tersediapria"`
 	TersediaWanita     string `json:"tersediawanita"`
 	TersediaPriaWanita string `json:"tersediapriawanita"`
+}
+
+type RuanganResponse struct {
+	KodeKelas          string `json:"kodekelas"`
+	KodeRuang          string `json:"koderuang"`
+	NamaRuang          string `json:"namaruang"`
+	Kapasitas          int    `json:"kapasitas"`
+	Tersedia           int    `json:"tersedia"`
+	TersediaPria       int    `json:"tersediapria"`
+	TersediaWanita     int    `json:"tersediawanita"`
+	TersediaPriaWanita int    `json:"tersediapriawanita"`
 }

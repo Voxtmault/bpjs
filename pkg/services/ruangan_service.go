@@ -21,11 +21,11 @@ type RuanganService struct {
 var _ interfaces.RuanganAplicares = &RuanganService{}
 
 func (s *RuanganService) GetReferensiJenisKamar(ctx context.Context) ([]*models.ReferenceJenisKamar, error) {
-	baseUrl := config.GetConfig().BPJSConfig.BPJSURL
+	baseUrl := config.GetConfig().BPJSConfig.AplicaresUrl + config.GetConfig().BPJSConfig.AplicaresPath
 	method := http.MethodGet
 
 	baseUrl = fmt.Sprintf(
-		"%s/aplicaresws/rest/ref/kelas",
+		"%s/rest/ref/kelas",
 		baseUrl,
 	)
 
@@ -38,7 +38,7 @@ func (s *RuanganService) GetReferensiJenisKamar(ctx context.Context) ([]*models.
 
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	resp, err := s.HttpHandler.SendRequestAplicares(ctx, req)
 	if err != nil {
 		if resp != "" {
 			return []*models.ReferenceJenisKamar{}, eris.Wrap(eris.New(resp), "BPJS Message")
@@ -63,12 +63,12 @@ func (s *RuanganService) GetReferensiJenisKamar(ctx context.Context) ([]*models.
 
 func (s *RuanganService) PostRuangan(ctx context.Context, obj *models.Ruangan, action string) (interface{}, error) {
 	//action : create,update,delete
-	baseUrl := config.GetConfig().BPJSConfig.BPJSURL
+	baseUrl := config.GetConfig().BPJSConfig.AplicaresUrl + config.GetConfig().BPJSConfig.AplicaresPath
 	ppkCode := config.GetConfig().BPJSConfig.PPKCode
 	method := http.MethodPost
 
 	baseUrl = fmt.Sprintf(
-		"%s/aplicaresws/rest/bed/%s/%s",
+		"%s/rest/bed/%s/%s",
 		baseUrl, action, ppkCode,
 	)
 
@@ -88,7 +88,7 @@ func (s *RuanganService) PostRuangan(ctx context.Context, obj *models.Ruangan, a
 
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	resp, err := s.HttpHandler.SendRequestAplicares(ctx, req)
 	if err != nil {
 		if resp != "" {
 			return nil, eris.Wrap(eris.New(resp), "BPJS Message")
@@ -111,13 +111,13 @@ func (s *RuanganService) PostRuangan(ctx context.Context, obj *models.Ruangan, a
 	return sep.Lists, nil
 }
 
-func (s *RuanganService) GetKetersediaanKamar(ctx context.Context, start, limit string) ([]*models.Ruangan, error) {
-	baseUrl := config.GetConfig().BPJSConfig.BPJSURL
+func (s *RuanganService) GetKetersediaanKamar(ctx context.Context, start, limit string) ([]*models.RuanganResponse, error) {
+	baseUrl := config.GetConfig().BPJSConfig.AplicaresUrl + config.GetConfig().BPJSConfig.AplicaresPath
 	ppkCode := config.GetConfig().BPJSConfig.PPKCode
 	method := http.MethodGet
 
 	baseUrl = fmt.Sprintf(
-		"%s/aplicaresws/rest/bed/read/%s/%s/%s",
+		"%s/rest/bed/read/%s/%s/%s",
 		baseUrl, ppkCode, start, limit,
 	)
 
@@ -130,10 +130,10 @@ func (s *RuanganService) GetKetersediaanKamar(ctx context.Context, start, limit 
 
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	resp, err := s.HttpHandler.SendRequestAplicares(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return []*models.Ruangan{}, eris.Wrap(eris.New(resp), "BPJS Message")
+			return []*models.RuanganResponse{}, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -142,7 +142,7 @@ func (s *RuanganService) GetKetersediaanKamar(ctx context.Context, start, limit 
 	log.Println("Response: ", resp)
 
 	if resp == "" {
-		return []*models.Ruangan{}, eris.New("a")
+		return []*models.RuanganResponse{}, eris.New("a")
 	}
 
 	var sep models.AplicaresRuanganResponse
