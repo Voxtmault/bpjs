@@ -20,6 +20,12 @@ type ControlPlanService struct {
 
 var _ interfaces.ControlPlan = &ControlPlanService{}
 
+func NewControlPlanService(httpHandler interfaces.RequestHandler) *ControlPlanService {
+	return &ControlPlanService{
+		HttpHandler: httpHandler,
+	}
+}
+
 func (s *ControlPlanService) GetViaSEP(ctx context.Context, sepNumber string) ([]*models.ControlPlanGetViaSEP, error) {
 	arrObj := []*models.ControlPlanGetViaSEP{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath

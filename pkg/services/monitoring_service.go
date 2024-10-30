@@ -19,6 +19,12 @@ type Monitoring struct {
 
 var _ interfaces.Monitoring = &Monitoring{}
 
+func NewMonitoringService(httpHandler interfaces.RequestHandler) *Monitoring {
+	return &Monitoring{
+		HttpHandler: httpHandler,
+	}
+}
+
 func (s *Monitoring) GetMonitoringDataKunjungan(ctx context.Context, tanggalPelayanan, jenisPelayanan string) ([]*models.MonitoringDataKunjungan, error) {
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
@@ -104,13 +110,13 @@ func (s *Monitoring) GetMonitoringDataKlaim(ctx context.Context, tanggalPelayana
 	return sep.Klaim, nil
 }
 
-func (s *Monitoring) GetMonitoringHistoryPelayananPeserta(ctx context.Context, tanggalPelayanan, jenisPelayanan string) ([]*models.MonitoringDataKunjungan, error) {
+func (s *Monitoring) GetMonitoringHistoryPelayananPeserta(ctx context.Context, noKartu, tanggalMulai, tanggalAkhir string) ([]*models.MonitoringDataKunjungan, error) {
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
 	baseUrl = fmt.Sprintf(
-		"%s/Monitoring/Kunjungan/Tanggal/%s/JnsPelayanan/%s",
-		baseUrl, tanggalPelayanan, jenisPelayanan,
+		"%s/monitoring/HistoriPelayanan/NoKartu/%s/tglMulai/%s/tglAkhir/%s",
+		baseUrl, noKartu, tanggalMulai, tanggalAkhir,
 	)
 
 	log.Println("URL: ", baseUrl)
