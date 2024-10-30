@@ -27,17 +27,17 @@ func Referral(e *echo.Echo, group *echo.Group) {
 	referral.GET("/sep_count/:referral_type/:referral_number", referralController.GetReferralSEPCount)
 
 	// CUD
-	referral.POST("", nil)
-	referral.PUT("", nil)
-	referral.DELETE("", nil)
+	referral.POST("", referralController.CreateReferral)
+	referral.PUT("", referralController.UpdateReferral)
+	referral.DELETE("", referralController.DeleteReferral)
 
 	// Special Referral
-	referral.GET("/special/:month/:year", nil)
-	referral.POST("/special", nil)
-	referral.DELETE("/special", nil)
+	referral.GET("/special/:month/:year", referralController.GetSpecialReferral)
+	referral.POST("/special", referralController.CreateSpecialReferral)
+	referral.DELETE("/special", referralController.DeleteSpecialReferral)
 
 	// Utility
 	referred := group.Group("/referred")
-	referred.GET("/specialists/:hf_code/:referral_date", nil)
-	referred.GET("/health_facility/:hf_code", nil)
+	referred.GET("/specialists/:hf_code/:referral_date", referralController.GetReferredSpecialist)
+	referred.GET("/health_facility/:hf_code", referralController.GetReferredHealthFacility)
 }

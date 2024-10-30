@@ -126,14 +126,14 @@ func (s *ReferralService) GetParticipantReferralByBPJSNumber(ctx context.Context
 	return arrObj, nil
 }
 
-func (s *ReferralService) GetReferedSpecialist(ctx context.Context, referedHealthFacilityCode, referalDate string) ([]*models.ReferredSpecialist, error) {
+func (s *ReferralService) GetReferredSpecialist(ctx context.Context, referredHealthFacilityCode, referralDate string) ([]*models.ReferredSpecialist, error) {
 	arrObj := models.ReferredSpecialistResponse{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
 	baseUrl = fmt.Sprintf(
 		"%s/Rujukan/ListSpesialistik/PPKRujukan/%s/TglRujukan/%s",
-		baseUrl, referedHealthFacilityCode, referalDate,
+		baseUrl, referredHealthFacilityCode, referralDate,
 	)
 
 	log.Println("URL: ", baseUrl)
@@ -167,14 +167,14 @@ func (s *ReferralService) GetReferedSpecialist(ctx context.Context, referedHealt
 	return arrObj.Lists, nil
 }
 
-func (s *ReferralService) GetReferedFacilities(ctx context.Context, referedHealthFacilityCode string) ([]*models.ReferredFacility, error) {
+func (s *ReferralService) GetReferredFacilities(ctx context.Context, referredHealthFacilityCode string) ([]*models.ReferredFacility, error) {
 	arrObj := models.ReferredFacilityResponse{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
 	baseUrl = fmt.Sprintf(
 		"%s/Rujukan/ListSarana/PPKRujukan/%s",
-		baseUrl, referedHealthFacilityCode,
+		baseUrl, referredHealthFacilityCode,
 	)
 
 	log.Println("URL: ", baseUrl)

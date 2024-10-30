@@ -23,7 +23,7 @@ func NewPRBController(service interfaces.PRB, validate echo.Validator) *PRBContr
 	}
 }
 
-func (s PRBController) Post(c echo.Context) error {
+func (s PRBController) POST(c echo.Context) error {
 	var res Response
 	var obj models.PRBInsertRequest
 	if err := c.Bind(&obj); err != nil {
@@ -67,7 +67,7 @@ func (s PRBController) PUT(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (s PRBController) Delete(c echo.Context) error {
+func (s PRBController) DELETE(c echo.Context) error {
 	var res Response
 	var obj models.PRBDeleteRequest
 	if err := c.Bind(&obj); err != nil {

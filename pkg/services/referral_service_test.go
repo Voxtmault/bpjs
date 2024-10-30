@@ -60,7 +60,7 @@ func TestGetReferedSpecialist(t *testing.T) {
 		},
 	}
 
-	data, err := s.GetReferedSpecialist(context.Background(), "0182R009", time.Now().Format(time.DateOnly))
+	data, err := s.GetReferredSpecialist(context.Background(), "0182R009", time.Now().Format(time.DateOnly))
 	if err != nil {
 		t.Errorf("Error getting refered specialist: %v", err)
 	}
@@ -80,7 +80,7 @@ func TestGetReferedFacilities(t *testing.T) {
 		},
 	}
 
-	data, err := s.GetReferedFacilities(context.Background(), "0182R009")
+	data, err := s.GetReferredFacilities(context.Background(), "0182R009")
 	if err != nil {
 		t.Errorf("Error getting refered facilities: %v", err)
 	}

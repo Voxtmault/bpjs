@@ -69,6 +69,10 @@ func InitRoute() {
 	sub_routes.Suppletion(e, bpjs)
 	sub_routes.Monitoring(e, bpjs)
 	sub_routes.FingerPrint(e, bpjs)
+	sub_routes.PRB(e, bpjs)
+	sub_routes.LPK(e, bpjs)
+	sub_routes.ICare(e, bpjs)
+	sub_routes.Aplicares(e, bpjs)
 
 	// Finally Start the Service
 	StartHTTPService(e)

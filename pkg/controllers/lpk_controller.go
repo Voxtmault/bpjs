@@ -22,7 +22,7 @@ func NewLPKController(service interfaces.LPK, validate echo.Validator) *LPKContr
 	}
 }
 
-func (s LPKController) Post(c echo.Context) error {
+func (s LPKController) POST(c echo.Context) error {
 	var res Response
 	var obj models.InsertLPKRequest
 	if err := c.Bind(&obj); err != nil {
@@ -93,8 +93,8 @@ func (s LPKController) DELETE(c echo.Context) error {
 
 func (s LPKController) GET(c echo.Context) error {
 	var res Response
-	tanggalMasuk := c.Param("tanggal_masuk")
 
+	tanggalMasuk := c.Param("tanggal_masuk")
 	if tanggalMasuk == "" || tanggalMasuk == ":tanggal_masuk" {
 		res.Message = "Tanggal tidak boleh kosong"
 		return echo.NewHTTPError(http.StatusBadRequest, res)
@@ -105,11 +105,13 @@ func (s LPKController) GET(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, res)
 		}
 	}
+
 	jenisPelayanan := c.Param("service_type")
 	if jenisPelayanan != "1" && jenisPelayanan != "2" {
 		res.Message = "Jenis Pelayanan tidak valid"
 		return echo.NewHTTPError(http.StatusBadRequest, res)
 	}
+
 	var err error
 	res.Data, err = s.service.LPKGet(c.Request().Context(), tanggalMasuk, jenisPelayanan)
 	if err != nil {

@@ -14,7 +14,7 @@ type AplicaresController struct {
 	validate echo.Validator
 }
 
-func NewAplicaresControllerControlPlanController(service interfaces.RuanganAplicares, validate echo.Validator) *AplicaresController {
+func NewAplicaresControllerController(service interfaces.RuanganAplicares, validate echo.Validator) *AplicaresController {
 	return &AplicaresController{
 		service:  service,
 		validate: validate,

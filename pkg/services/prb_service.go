@@ -20,8 +20,8 @@ type PRBService struct {
 
 var _ interfaces.PRB = &PRBService{}
 
-func NewPRBService(httpHandler interfaces.RequestHandler) *LPKService {
-	return &LPKService{
+func NewPRBService(httpHandler interfaces.RequestHandler) *PRBService {
+	return &PRBService{
 		HttpHandler: httpHandler,
 	}
 }
