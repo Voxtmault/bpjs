@@ -26,9 +26,9 @@ func SEP(e *echo.Echo, group *echo.Group) {
 	sep.DELETE("", sepController.Delete)
 
 	// Approval, Usually for backdate SEP
-	sep.POST("/submission", nil)
-	sep.POST("/approval", nil)
-	sep.GET("/approval/:month/:year", nil)
+	sep.POST("/submission", sepController.SubmitSEPRequest)
+	sep.POST("/approval", sepController.ApproveSEPRequest)
+	sep.GET("/approval/:month/:year", sepController.GetSEPRequest)
 
 	// Utility
 	sep.PUT("/discharge_date", sepController.UpdateDischargeDate)
@@ -36,15 +36,24 @@ func SEP(e *echo.Echo, group *echo.Group) {
 
 	// Internal
 	internalSep := sep.Group("/internal")
-	internalSep.GET("/:sep_number", nil)
-	internalSep.DELETE("", nil)
+	internalSep.GET("/:sep_number", sepController.GetInternalSEP)
+	internalSep.DELETE("", sepController.DeleteInternalSEP)
 }
 
 func Suppletion(e *echo.Echo, group *echo.Group) {
 
 	suppletion := group.Group("/suppletion")
 
+	suppletionController := controllers.NewSuppletionController(
+		services.NewSuppletionService(
+			services.NewBPJSRequestHandlerService(
+				services.NewBPJSSecurityService(),
+			),
+		),
+		e.Validator,
+	)
+
 	// CRUD
-	suppletion.GET("/jasa_raharja/:service_date/:card_number", nil)
-	suppletion.GET("/accident_master_data/:card_number", nil)
+	suppletion.GET("/jasa_raharja/:service_date/:card_number", suppletionController.GetJasaRaharjaSuppletion)
+	suppletion.GET("/accident_master_data/:card_number", suppletionController.GetAccidentMasterData)
 }

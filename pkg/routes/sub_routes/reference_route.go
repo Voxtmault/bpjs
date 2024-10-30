@@ -25,7 +25,7 @@ func Reference(e *echo.Echo, group *echo.Group) {
 	reference.GET("/nursing_class", referenceController.GetNursingClass)
 	reference.GET("/treatment_room", referenceController.GetTreatmentRoom)
 	reference.GET("/discharge_method", referenceController.GetDischargeMethod)
-	reference.GET("/post_discharge_condition", referenceController.GetPostDischargeCondition)
+	reference.GET("/discharge_condition", referenceController.GetDischargeCondition)
 
 	// Doctor Related
 	reference.GET("/doctor/specialist", referenceController.GetDoctorSpecialists)

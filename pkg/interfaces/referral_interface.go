@@ -31,4 +31,6 @@ type Referral interface {
 	CreateSpecialReferral(ctx context.Context, obj *models.SpecialReferralCreate) (*models.SpecialReferralCreateResponse, error)
 	GetSpecialReferrals(ctx context.Context, month, year string) ([]*models.SpecialReferrals, error)
 	DeleteSpecialReferral(ctx context.Context, obj *models.SpecialReferralDelete) (string, error)
+
+	GetReferralSEPCount(ctx context.Context, referralType, referralNumber string) (string, error)
 }

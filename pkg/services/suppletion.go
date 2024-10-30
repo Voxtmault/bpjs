@@ -19,6 +19,12 @@ type SuppletionService struct {
 
 var _ interfaces.SuplesiJasaRaharja = &SuppletionService{}
 
+func NewSuppletionService(httpHandler interfaces.RequestHandler) *SuppletionService {
+	return &SuppletionService{
+		HttpHandler: httpHandler,
+	}
+}
+
 func (s *SuppletionService) Suplesi(ctx context.Context, params *models.SEPSuppletionParams) ([]*models.SEPSuppletion, error) {
 	arrObj := models.SEPSuppletionResponse{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath

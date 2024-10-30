@@ -9,6 +9,7 @@ import (
 	"github.com/rotisserie/eris"
 	"github.com/voxtmault/bpjs-rs-module/pkg/interfaces"
 	"github.com/voxtmault/bpjs-rs-module/pkg/models"
+	"github.com/voxtmault/bpjs-rs-module/pkg/utils"
 )
 
 type SEPController struct {
@@ -173,6 +174,83 @@ func (s SEPController) GetDischargedSEP(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
+func (s SEPController) SubmitSEPRequest(c echo.Context) error {
+	var res Response
+
+	var obj models.SEPRequestCreate
+	if err := c.Bind(&obj); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	var err error
+	res.Data, err = s.service.RequestSEP(c.Request().Context(), &obj)
+	if err != nil {
+		if res.Data != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
+		} else {
+			slog.Error("sep_controller -> SubmitSEPRequest", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (s SEPController) ApproveSEPRequest(c echo.Context) error {
+	var res Response
+
+	var obj models.SEPRequestCreate
+	if err := c.Bind(&obj); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	var err error
+	res.Data, err = s.service.ApprovalSEPRequest(c.Request().Context(), &obj)
+	if err != nil {
+		if res.Data != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
+		} else {
+			slog.Error("sep_controller -> ApproveSEPRequest", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (s SEPController) GetSEPRequest(c echo.Context) error {
+	var res Response
+
+	month := c.Param("month")
+	if month == "" || month == ":month" {
+		return echo.NewHTTPError(http.StatusBadRequest, "bulan tidak boleh kosong")
+	}
+
+	year := c.Param("year")
+	if year == "" || year == ":year" {
+		return echo.NewHTTPError(http.StatusBadRequest, "tahun tidak boleh kosong")
+	}
+
+	var err error
+	res.Data, err = s.service.GetSEPRequests(c.Request().Context(), month, year)
+	if err != nil {
+		if res.Data != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
+		} else {
+			slog.Error("sep_controller -> GetSEPRequest", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
 func (s SEPController) GetInternalSEP(c echo.Context) error {
 	var res Response
 
@@ -188,6 +266,143 @@ func (s SEPController) GetInternalSEP(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
 		} else {
 			slog.Error("sep_controller -> GetInternalSEP", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (s SEPController) DeleteInternalSEP(c echo.Context) error {
+	var res Response
+
+	var obj models.DeleteInternalSEP
+	if err := c.Bind(&obj); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	var err error
+	res.Data, err = s.service.DeleteInternalSEP(c.Request().Context(), &obj)
+	if err != nil {
+		if res.Data != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
+		} else {
+			slog.Error("sep_controller -> GetInternalSEP", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (s SEPController) GetFingerprintAuthentication(c echo.Context) error {
+	var res Response
+
+	serviceDate := c.Param("service_date")
+	if serviceDate == "" || serviceDate == ":service_date" {
+		return echo.NewHTTPError(http.StatusBadRequest, "tanggal SEP tidak boleh kosong")
+	}
+
+	cardNumber := c.Param("card_number")
+	if cardNumber == "" || cardNumber == ":card_number" {
+		return echo.NewHTTPError(http.StatusBadRequest, "no kartu tidak boleh kosong")
+	}
+
+	var err error
+	res.Data, err = s.service.GetFingerPrintSEP(c.Request().Context(), cardNumber, serviceDate)
+	if err != nil {
+		if res.Data != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
+		} else {
+			slog.Error("sep_controller -> GetFingerprintAuthentication", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (s SEPController) GetAuthenticatedFingerprints(c echo.Context) error {
+	var res Response
+
+	serviceDate := c.Param("service_date")
+	if serviceDate == "" || serviceDate == ":service_date" {
+		return echo.NewHTTPError(http.StatusBadRequest, "tanggal SEP tidak boleh kosong")
+	}
+
+	var err error
+	res.Data, err = s.service.GetListFingerPrintSEP(c.Request().Context(), serviceDate)
+	if err != nil {
+		if res.Data != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
+		} else {
+			slog.Error("sep_controller -> GetAuthenticatedFingerprints", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (s SEPController) GetRandomQuestion(c echo.Context) error {
+	var res Response
+
+	serviceDate := c.Param("service_date")
+	if serviceDate == "" || serviceDate == ":service_date" {
+		return echo.NewHTTPError(http.StatusBadRequest, "tanggal SEP tidak boleh kosong")
+	}
+
+	cardNumber := c.Param("card_number")
+	if cardNumber == "" || cardNumber == ":card_number" {
+		return echo.NewHTTPError(http.StatusBadRequest, "no kartu tidak boleh kosong")
+	}
+
+	var err error
+	res.Data, err = s.service.GetListRandomQuestion(c.Request().Context(), cardNumber, serviceDate)
+	if err != nil {
+		if res.Data != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
+		} else {
+			slog.Error("sep_controller -> GetRandomQuestion", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (s SEPController) AnswerRandomQuestion(c echo.Context) error {
+	var res Response
+
+	var obj models.PostRequestRandomQuestion
+	if err := c.Bind(&obj); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if errMap := utils.MangleValidateResult(s.validator.Validate(obj)); len(errMap) > 0 {
+		res.Message = "Validation Error"
+		res.Data = errMap
+
+		return echo.NewHTTPError(http.StatusBadRequest, res)
+	}
+
+	var err error
+	res.Data, err = s.service.PostRandomQuestion(c.Request().Context(), &obj)
+	if err != nil {
+		if res.Data != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
+		} else {
+			slog.Error("sep_controller -> AnswerRandomQuestion", "stack trace", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
 		}
 	}

@@ -112,23 +112,33 @@ type SEPParticipantResponse struct {
 }
 
 type SEPCreateResponse struct {
-	ServiceAssessment     string          `json:"assesmentPel"`
-	Note                  string          `json:"catatan"`
-	Diagnosis             string          `json:"diagnosa"`
-	ProcedureFlag         string          `json:"flagProcedure"`
-	Information           Information     `json:"informasi"`
-	ServiceType           string          `json:"jnsPelayanan"`
-	HealthCareSupportCode string          `json:"kdPenunjang"`
-	PolyclinicsCode       string          `json:"kdPoli"`
-	TreatmentClass        string          `json:"kelasRawat"`
-	ReferenceNumber       string          `json:"noRujukan"`
-	SEPNumber             string          `json:"noSep"`
-	Guarantor             string          `json:"penjamin"`
-	Participant           BPJSParticipant `json:"peserta"`
-	Polyclinics           string          `json:"poli"`
-	PoliclinicExecutive   string          `json:"poliEksekutif"`
-	SEPDate               string          `json:"tglSep"`
-	VisitationPurpose     string          `json:"tujuanKunj"`
+	ServiceAssessment     string               `json:"assesmentPel"`
+	Note                  string               `json:"catatan"`
+	Diagnosis             string               `json:"diagnosa"`
+	ProcedureFlag         string               `json:"flagProcedure"`
+	Information           Information          `json:"informasi"`
+	ServiceType           string               `json:"jnsPelayanan"`
+	HealthCareSupportCode string               `json:"kdPenunjang"`
+	PolyclinicsCode       string               `json:"kdPoli"`
+	TreatmentClass        string               `json:"kelasRawat"`
+	ReferenceNumber       string               `json:"noRujukan"`
+	SEPNumber             string               `json:"noSep"`
+	Guarantor             string               `json:"penjamin"`
+	Participant           SEPCreateParticipant `json:"peserta"`
+	Polyclinics           string               `json:"poli"`
+	PoliclinicExecutive   string               `json:"poliEksekutif"`
+	SEPDate               string               `json:"tglSep"`
+	VisitationPurpose     string               `json:"tujuanKunj"`
+}
+type SEPCreateParticipant struct {
+	CardNumber          string `json:"noKartu"`
+	ParticipantName     string `json:"nama"`
+	DateOfBirth         string `json:"tglLahir"`
+	MedicalRecordNumber string `json:"noMr"`
+	Gender              string `json:"kelamin"`
+	ParticipantType     string `json:"jnsPeserta"`
+	ClassRight          string `json:"hakKelas"`
+	Insurance           string `json:"asuransi"`
 }
 type SEPCreateResponseWrapper struct {
 	SEP *SEPCreateResponse `json:"sep"`
@@ -266,6 +276,7 @@ type SEPGetListFingerPrint struct {
 	NoSEP   string `json:"noSEP"`
 }
 
+// TODO : Add Validation tag
 type PostRequestRandomQuestion struct {
 	NoKartu   string `json:"noKartu"`
 	TglSep    string `json:"tglSep"`
@@ -309,4 +320,12 @@ type InternalSEP struct {
 type InternalSEPWrapper struct {
 	List  []*InternalSEP `json:"list"`
 	Count string         `json:"count"`
+}
+
+type DeleteInternalSEP struct {
+	SEPNumber            string `json:"noSep"`
+	LetterNumber         string `json:"noSurat"`
+	InternalReferralDate string `json:"tglRujukanInternal"`
+	TargetPolyCode       string `json:"kdPoliTuj"`
+	User                 string `json:"user"`
 }

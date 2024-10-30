@@ -14,8 +14,8 @@ type SEPSuppletionResponse struct {
 }
 
 type SEPSuppletionParams struct {
-	BPJSNumber  string `validate:"required,min=13"`
-	ServiceDate string `validate:"required,datetime=2006-01-02"`
+	BPJSNumber  string `validate:"required,min=13" param:"card_number"`
+	ServiceDate string `validate:"required,datetime=2006-01-02" param:"service_date"`
 }
 
 type SEPTrafficAccident struct {
@@ -34,5 +34,5 @@ type SEPTrafficAccidentResponse struct {
 }
 
 type SEPTrafficAccidentParams struct {
-	BPJSNumber string `validate:"required,min=13"`
+	BPJSNumber string `validate:"required,min=13" param:"card_number"`
 }
