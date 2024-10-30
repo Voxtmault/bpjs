@@ -59,13 +59,13 @@ func (s MonitoringController) GetMonitoringDataKunjungan(c echo.Context) error {
 
 func (s MonitoringController) GetMonitoringDataKlaim(c echo.Context) error {
 	var res Response
-	tanggalPulalng := c.Param("discharge_date")
+	tanggalPulang := c.Param("discharge_date")
 
-	if tanggalPulalng == "" || tanggalPulalng == ":discharge_date" {
+	if tanggalPulang == "" || tanggalPulang == ":discharge_date" {
 		res.Message = "Tanggal tidak boleh kosong"
 		return echo.NewHTTPError(http.StatusBadRequest, res)
 	} else {
-		_, err := time.Parse(time.DateOnly, tanggalPulalng)
+		_, err := time.Parse(time.DateOnly, tanggalPulang)
 		if err != nil {
 			res.Message = "Tanggal tidak Valid"
 			return echo.NewHTTPError(http.StatusBadRequest, res)
@@ -82,7 +82,7 @@ func (s MonitoringController) GetMonitoringDataKlaim(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, res)
 	}
 	var err error
-	res.Data, err = s.service.GetMonitoringDataKlaim(c.Request().Context(), tanggalPulalng, jenisPelayanan, status_klaim)
+	res.Data, err = s.service.GetMonitoringDataKlaim(c.Request().Context(), tanggalPulang, jenisPelayanan, status_klaim)
 	if err != nil {
 		if res.Data != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
