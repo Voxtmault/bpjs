@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/rotisserie/eris"
@@ -34,6 +35,12 @@ type ReferralService struct {
 }
 
 var _ interfaces.Referral = &ReferralService{}
+
+func NewReferralService(httpHandler interfaces.RequestHandler) *ReferralService {
+	return &ReferralService{
+		HttpHandler: httpHandler,
+	}
+}
 
 func (s *ReferralService) GetParticipantReferralByReferralNumber(ctx context.Context, referalNumber string, source uint) ([]*models.Referral, error) {
 	arrObj := []*models.Referral{}
@@ -534,6 +541,37 @@ func (s *ReferralService) DeleteSpecialReferral(ctx context.Context, obj *models
 	}
 
 	log.Println("Response: ", resp)
+
+	return resp, nil
+}
+
+func (s *ReferralService) GetReferralSEPCount(ctx context.Context, referralType, referralNumber string) (string, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodGet
+
+	baseUrl = fmt.Sprintf(
+		"%s/Rujukan/JumlahSEP/%s/%s",
+		baseUrl, referralType, referralNumber,
+	)
+
+	log.Println("URL: ", baseUrl)
+	slog.Debug("referral_controller -> GetReferralSEPCount", "base url", baseUrl)
+
+	req, err := http.NewRequest(method, baseUrl, nil)
+	if err != nil {
+		return "", eris.Wrap(err, "failed to create http request")
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return "message from bpjs", eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return "nil", eris.Wrap(err, "failed to send http request")
+		}
+	}
 
 	return resp, nil
 }

@@ -133,7 +133,7 @@ func (s ReferenceController) GetDischargeMethod(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (s ReferenceController) GetPostDischargeCondition(c echo.Context) error {
+func (s ReferenceController) GetDischargeCondition(c echo.Context) error {
 	var res Response
 
 	var err error

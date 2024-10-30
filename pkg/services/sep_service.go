@@ -293,7 +293,7 @@ func (s *SEPService) GetSEPRequests(ctx context.Context, month, year string) ([]
 		baseUrl, month, year,
 	)
 
-	log.Println("URL: ", baseUrl)
+	slog.Debug("sep_service -> GetSEPRequests", "base url", baseUrl)
 
 	req, err := http.NewRequest(method, baseUrl, nil)
 	if err != nil {
@@ -314,7 +314,7 @@ func (s *SEPService) GetSEPRequests(ctx context.Context, month, year string) ([]
 	log.Println("Response: ", resp)
 
 	if resp == "" {
-		return []*models.SEPRequest{}, eris.New("a")
+		return []*models.SEPRequest{}, eris.New("somethinh went wrong")
 	}
 
 	var sep models.SEPRequestResponse
@@ -583,7 +583,7 @@ func (s *SEPService) PostRandomQuestion(ctx context.Context, obj *models.PostReq
 
 func (s *SEPService) GetInternalSEP(ctx context.Context, sepNumber string) ([]*models.InternalSEP, error) {
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
-	method := http.MethodPost
+	method := http.MethodGet
 
 	baseUrl = fmt.Sprintf(
 		"%s/SEP/Internal/%s",
@@ -619,4 +619,45 @@ func (s *SEPService) GetInternalSEP(ctx context.Context, sepNumber string) ([]*m
 	}
 
 	return sep.List, nil
+}
+
+func (s *SEPService) DeleteInternalSEP(ctx context.Context, obj *models.DeleteInternalSEP) (string, error) {
+	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
+	method := http.MethodDelete
+
+	baseUrl = fmt.Sprintf("%s/SEP/Internal/delete", baseUrl)
+
+	slog.Debug("sep_service -> DeleteInternalSEP", "base url", baseUrl)
+
+	jsonData, err := json.Marshal(models.BPJSRequest{
+		Request: &models.TSEP{
+			TSEP: obj,
+		},
+	})
+	if err != nil {
+		return "", eris.Wrap(err, "failed to marshal object")
+	}
+
+	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", eris.Wrap(err, "failed to create http request")
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.HttpHandler.SendRequest(ctx, req)
+	if err != nil {
+		if resp != "" {
+			return "message from bpjs", eris.Wrap(eris.New(resp), "BPJS Message")
+		} else {
+			return "", eris.Wrap(err, "failed to send http request")
+		}
+	}
+
+	log.Println("Response: ", resp)
+
+	if resp == "" {
+		return "", eris.New("something went wrong")
+	}
+
+	return resp, nil
 }

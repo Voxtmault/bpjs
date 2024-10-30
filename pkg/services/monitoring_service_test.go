@@ -19,7 +19,7 @@ func TestGetMonitoringData(t *testing.T) {
 		},
 	}
 
-	data, err := service.GetMonitoringDataKlaim(context.Background(), "2024-10-22", "2", "1")
+	data, err := service.GetMonitoringDataKlaim(context.Background(), "2024-10-30", "1", "1")
 	if err != nil {
 		log.Println("Root Error", eris.Cause(err))
 		t.Errorf("Error getting participant: %v", err)

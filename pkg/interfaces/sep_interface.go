@@ -21,11 +21,14 @@ type SEP interface {
 	GetSEPRequests(ctx context.Context, month, year string) ([]*models.SEPRequest, error)
 
 	GetInternalSEP(ctx context.Context, sepNumber string) ([]*models.InternalSEP, error)
+	DeleteInternalSEP(ctx context.Context, obj *models.DeleteInternalSEP) (string, error)
 
 	UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpdateTanggalPulangRequest) error
 	GetDischargedSEP(ctx context.Context, month, year, filter string) ([]*models.DischargedSEP, error)
 	GetFingerPrintSEP(ctx context.Context, noKartu, tanggalPelayanan string) (*models.SEPGetFingerPrint, error)
 	GetListFingerPrintSEP(ctx context.Context, tanggalPelayanan string) ([]*models.SEPGetListFingerPrint, error)
+	PostRandomQuestion(ctx context.Context, obj *models.PostRequestRandomQuestion) (bool, error)
+
 	GetListRandomQuestion(ctx context.Context, noKartu, tanggalPelayanan string) ([]*models.SEPGetRandomQuestion, error)
 }
 
