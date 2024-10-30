@@ -1,10 +1,25 @@
 package models
 
-type ReferenceKamar struct {
+type ReferenceJenisKamar struct {
 	KodeKelas string `json:"kodekelas"`
 	NamaKelas string `json:"namakelas"`
 }
 
 type AplicaresRequestResponse struct {
-	Lists []*ReferenceKamar `json:"list"`
+	Lists []*ReferenceJenisKamar `json:"list"`
+}
+
+type AplicaresRuanganResponse struct {
+	Lists []*Ruangan `json:"list"`
+}
+
+type Ruangan struct {
+	KodeKelas          string `json:"kodekelas"`
+	KodeRuang          string `json:"koderuang"`
+	NamaRuang          string `json:"namaruang"`
+	Kapasitas          string `json:"kapasitas"`
+	Tersedia           string `json:"tersedia"`
+	TersediaPria       string `json:"tersediapria"`
+	TersediaWanita     string `json:"tersediawanita"`
+	TersediaPriaWanita string `json:"tersediapriawanita"`
 }

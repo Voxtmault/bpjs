@@ -7,4 +7,5 @@ import (
 
 type RequestHandler interface {
 	SendRequest(ctx context.Context, req *http.Request) (string, error)
+	SendRequestIcare(ctx context.Context, req *http.Request) (string, error)
 }

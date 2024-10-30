@@ -13,7 +13,7 @@ import (
 
 func TestInsertSEP(t *testing.T) {
 	// Load the config
-	config.New("/home/andy/go-projects/rs/bpjs/.env")
+	config.New("../../.env")
 
 	s := SEPService{
 		HttpHandler: &RequestHandlerService{
@@ -64,7 +64,7 @@ func TestInsertSEP(t *testing.T) {
 
 	sample := `{
                  "noKartu":"0002088008515",
-                 "tglSep":"2024-10-22",
+                 "tglSep":"2024-10-30",
                  "ppkPelayanan":"0182R009",
                  "jnsPelayanan":"2",
                  "klsRawat":{
@@ -76,7 +76,7 @@ func TestInsertSEP(t *testing.T) {
                  "noMR":"000001",
                  "rujukan":{
                     "asalRujukan":"2",
-                    "tglRujukan":"2024-10-22",
+                    "tglRujukan":"2024-10-30",
                     "noRujukan":"",
                     "ppkRujukan":"0182R009"
                  },
