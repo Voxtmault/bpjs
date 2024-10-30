@@ -20,6 +20,12 @@ type RuanganService struct {
 
 var _ interfaces.RuanganAplicares = &RuanganService{}
 
+func NewRuanganService(httpHandler interfaces.RequestHandler) *RuanganService {
+	return &RuanganService{
+		HttpHandler: httpHandler,
+	}
+}
+
 func (s *RuanganService) GetReferensiJenisKamar(ctx context.Context) ([]*models.ReferenceJenisKamar, error) {
 	baseUrl := config.GetConfig().BPJSConfig.AplicaresUrl + config.GetConfig().BPJSConfig.AplicaresPath
 	method := http.MethodGet

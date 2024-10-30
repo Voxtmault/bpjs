@@ -71,12 +71,12 @@ func (s MonitoringController) GetMonitoringDataKlaim(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, res)
 		}
 	}
-	jenisPelayanan := c.Param("jenis_pelayanan")
+	jenisPelayanan := c.Param("service_type")
 	if jenisPelayanan != "1" && jenisPelayanan != "2" {
 		res.Message = "Jenis Pelayanan tidak valid"
 		return echo.NewHTTPError(http.StatusBadRequest, res)
 	}
-	status_klaim := c.Param("status_klaim")
+	status_klaim := c.Param("claim_status")
 	if jenisPelayanan != "1" && jenisPelayanan != "2" && jenisPelayanan != "3" {
 		res.Message = "Jenis Pelayanan tidak valid"
 		return echo.NewHTTPError(http.StatusBadRequest, res)

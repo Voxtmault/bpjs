@@ -20,6 +20,12 @@ type IcareService struct {
 
 var _ interfaces.Icare = &IcareService{}
 
+func NewIcareService(httpHandler interfaces.RequestHandler) *IcareService {
+	return &IcareService{
+		HttpHandler: httpHandler,
+	}
+}
+
 func (s *IcareService) FKRTLIcare(ctx context.Context, obj *models.FKRTLRequest) (interface{}, error) {
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.ICarePath
 	method := http.MethodPost
