@@ -18,11 +18,14 @@ type SEP interface {
 	// For SEP Approval, Only Fingerprint request may be accepted by the HealthCare (Rumah Sakit).
 	// For other types of request, it will be done by BPJS Personnel
 	ApprovalSEPRequest(ctx context.Context, obj *models.SEPRequestCreate) (string, error)
-
 	GetSEPRequests(ctx context.Context, month, year string) ([]*models.SEPRequest, error)
-	UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpdateTanggalPulangRequest) (interface{}, error)
+
+	GetInternalSEP(ctx context.Context, sepNumber string) ([]*models.InternalSEP, error)
+
+	UpdateTanggalPulang(ctx context.Context, obj *models.SEPUpdateTanggalPulangRequest) error
+	GetDischargedSEP(ctx context.Context, month, year, filter string) ([]*models.DischargedSEP, error)
 	GetFingerPrintSEP(ctx context.Context, noKartu, tanggalPelayanan string) (*models.SEPGetFingerPrint, error)
-	GetListFIngerPrintSEP(ctx context.Context, tanggalPelayanan string) ([]*models.SEPGetListFingerPrint, error)
+	GetListFingerPrintSEP(ctx context.Context, tanggalPelayanan string) ([]*models.SEPGetListFingerPrint, error)
 	GetListRandomQuestion(ctx context.Context, noKartu, tanggalPelayanan string) ([]*models.SEPGetRandomQuestion, error)
 }
 

@@ -1,25 +1,38 @@
 package sub_routes
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+	"github.com/voxtmault/bpjs-rs-module/pkg/controllers"
+	"github.com/voxtmault/bpjs-rs-module/pkg/services"
+)
 
 func SEP(e *echo.Echo, group *echo.Group) {
 
 	sep := group.Group("/sep")
 
-	// CRUD
-	sep.GET("/:sep_number", nil)
-	sep.POST("", nil)
-	sep.PUT("", nil)
-	sep.DELETE("", nil)
+	sepController := controllers.NewSEPController(
+		services.NewSEPService(
+			services.NewBPJSRequestHandlerService(
+				services.NewBPJSSecurityService(),
+			),
+		),
+		e.Validator,
+	)
 
-	// Approval
+	// CRUD
+	sep.GET("/:sep_number", sepController.Get)
+	sep.POST("", sepController.Post)
+	sep.PUT("", sepController.Put)
+	sep.DELETE("", sepController.Delete)
+
+	// Approval, Usually for backdate SEP
 	sep.POST("/submission", nil)
 	sep.POST("/approval", nil)
 	sep.GET("/approval/:month/:year", nil)
 
 	// Utility
-	sep.PUT("/discharge_date", nil)
-	sep.GET("/get_discharged_sep/:month/:year/:filter", nil)
+	sep.PUT("/discharge_date", sepController.UpdateDischargeDate)
+	sep.GET("/get_discharged_sep/:month/:year/:filter", sepController.GetDischargedSEP)
 
 	// Internal
 	internalSep := sep.Group("/internal")

@@ -2,25 +2,16 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"net"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/voxtmault/bpjs-rs-module/config"
-	intercept "github.com/voxtmault/bpjs-rs-module/pkg/interceptors"
 	"github.com/voxtmault/bpjs-rs-module/pkg/logger"
-	rpc "github.com/voxtmault/bpjs-rs-module/pkg/rpc"
-	"github.com/voxtmault/bpjs-rs-module/pkg/storage"
-	"github.com/voxtmault/bpjs-rs-module/pkg/utils"
-
-	pbBPJS "github.com/voxtmault/bpjs-service-proto/go"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	"github.com/voxtmault/bpjs-rs-module/pkg/routes"
 )
 
 func main() {
@@ -28,60 +19,65 @@ func main() {
 	timeLoc, _ := time.LoadLocation(AppConfig.AppTimezone)
 	time.Local = timeLoc
 
-	// Adjust to your needs
-	if err := storage.InitMariaDB(&AppConfig.DBConfig); err != nil {
-		panic(err)
+	if AppConfig.AppMode == "debug" {
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	} else {
+		slog.SetLogLoggerLevel(slog.LevelInfo)
 	}
+
+	// Adjust to your needs
+	// if err := storage.InitMariaDB(&AppConfig.DBConfig); err != nil {
+	// 	panic(err)
+	// }
 	// if err := storage.InitRedis(&AppConfig.RedisConfig); err != nil {
 	// 	panic(err)
 	// }
-	utils.InitValidator()
-	// Register Custom Validators
-	utils.RegisterCustomValidations(utils.GetValidator())
 
 	if err := logger.InitLogger(&AppConfig.LoggingConfig); err != nil {
 		panic(err)
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", AppConfig.AppPort))
-	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
-	}
+	// lis, err := net.Listen("tcp", fmt.Sprintf(":%s", AppConfig.AppPort))
+	// if err != nil {
+	// 	log.Fatalf("Failed to listen: %v", err)
+	// }
 
 	// Experimental Rate Limiter
 	// rateLim := interceptors.NewRateLimiter(rate.Every(time.Minute/10), 10)
 
 	// Try using SSL / TLS
-	var s *grpc.Server
-	if AppConfig.SSLConfig.CertPath != "" && AppConfig.SSLConfig.KeyPath != "" {
-		creds, err := credentials.NewServerTLSFromFile(AppConfig.SSLConfig.CertPath, AppConfig.SSLConfig.KeyPath)
-		if err != nil {
-			panic(fmt.Sprintf("SSL Config: %s", err))
-		}
-		log.Println("Using SSL / TLS")
-		s = grpc.NewServer(
-			grpc.UnaryInterceptor(intercept.UnaryServerInterceptor),
-			grpc.Creds(creds),
-		)
-	} else {
-		log.Println("Not Using SSL / TLS")
-		s = grpc.NewServer(
-			grpc.UnaryInterceptor(intercept.UnaryServerInterceptor),
-		)
-	}
+	// var s *grpc.Server
+	// if AppConfig.SSLConfig.CertPath != "" && AppConfig.SSLConfig.KeyPath != "" {
+	// 	creds, err := credentials.NewServerTLSFromFile(AppConfig.SSLConfig.CertPath, AppConfig.SSLConfig.KeyPath)
+	// 	if err != nil {
+	// 		panic(fmt.Sprintf("SSL Config: %s", err))
+	// 	}
+	// 	log.Println("Using SSL / TLS")
+	// 	s = grpc.NewServer(
+	// 		grpc.UnaryInterceptor(intercept.UnaryServerInterceptor),
+	// 		grpc.Creds(creds),
+	// 	)
+	// } else {
+	// 	log.Println("Not Using SSL / TLS")
+	// 	s = grpc.NewServer(
+	// 		grpc.UnaryInterceptor(intercept.UnaryServerInterceptor),
+	// 	)
+	// }
 
-	// Init gRPC Services
-	bpjsService := rpc.InitRPCService()
-	pbBPJS.RegisterParticipantServiceServer(s, bpjsService.ParticipantService)
-	pbBPJS.RegisterReferenceServiceServer(s, bpjsService.ReferenceService)
+	// // Init gRPC Services
+	// bpjsService := rpc.InitRPCService()
+	// pbBPJS.RegisterParticipantServiceServer(s, bpjsService.ParticipantService)
+	// pbBPJS.RegisterReferenceServiceServer(s, bpjsService.ReferenceService)
 
-	go func() {
-		log.Printf("BPJS gRPC Server listening at %v", lis.Addr())
+	// go func() {
+	// 	log.Printf("BPJS gRPC Server listening at %v", lis.Addr())
 
-		if err = s.Serve(lis); err != nil {
-			log.Fatalf("Failed to serve: %v", err)
-		}
-	}()
+	// 	if err = s.Serve(lis); err != nil {
+	// 		log.Fatalf("Failed to serve: %v", err)
+	// 	}
+	// }()
+
+	routes.InitRoute()
 
 	// Graceful shutdown
 	interupt := make(chan os.Signal, 1)
@@ -94,7 +90,7 @@ func main() {
 	log.Println("Received Shutdown Signal. Shutting Down Server......")
 
 	// Stopping gRPC Service
-	s.Stop()
+	// s.Stop()
 
 	// Closes connections
 	// log.Println("Closing Database Connection")

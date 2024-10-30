@@ -3,7 +3,6 @@ package bpjs
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/rotisserie/eris"
 	"github.com/voxtmault/bpjs-rs-module/pkg/interfaces"
@@ -69,48 +68,48 @@ func (s *BPJSReferenceRPCService) DiagnosisReference(ctx context.Context, in *pb
 	}, nil
 }
 
-func (s *BPJSReferenceRPCService) DoctorReference(ctx context.Context, in *pb.DoctorReferenceRequest) (*pb.ReferenceResponse, error) {
+// func (s *BPJSReferenceRPCService) DoctorReference(ctx context.Context, in *pb.DoctorReferenceRequest) (*pb.ReferenceResponse, error) {
 
-	obj := models.DoctorReferenceParams{
-		ServiceType:    in.GetServiceType(),
-		ServiceDate:    in.GetServiceDate(),
-		SpecialistCode: in.GetSpecialistCode(),
-	}
+// 	obj := models.DoctorReferenceParams{
+// 		ServiceType:    in.GetServiceType(),
+// 		ServiceDate:    in.GetServiceDate(),
+// 		SpecialistCode: in.GetSpecialistCode(),
+// 	}
 
-	// Checks if the Service Date is not included in the request, if it isn't then default to now / today
-	if obj.ServiceDate == "" {
-		obj.ServiceDate = time.Now().Format(time.DateOnly)
-	}
+// 	// Checks if the Service Date is not included in the request, if it isn't then default to now / today
+// 	if obj.ServiceDate == "" {
+// 		obj.ServiceDate = time.Now().Format(time.DateOnly)
+// 	}
 
-	if err := utils.GetValidator().Struct(obj); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, fmt.Errorf("invalid request: %w", err).Error())
-	}
+// 	if err := utils.GetValidator().Struct(obj); err != nil {
+// 		return nil, status.Errorf(codes.InvalidArgument, fmt.Errorf("invalid request: %w", err).Error())
+// 	}
 
-	data, err := s.Service.DoctorReference(ctx, obj.ServiceType, obj.ServiceDate, obj.SpecialistCode)
-	if err != nil {
-		// log.Println(eris.Cause(err))
-		if data != nil {
-			// Meaning that there is no internal error, but a business error
-			return nil, status.Error(codes.InvalidArgument, eris.Cause(err).Error())
-		} else {
-			return nil, status.Errorf(codes.Internal, fmt.Errorf("failed to get participant: %w", err).Error())
-		}
-	}
+// 	data, err := s.Service.DoctorReference(ctx, obj.ServiceType, obj.ServiceDate, obj.SpecialistCode)
+// 	if err != nil {
+// 		// log.Println(eris.Cause(err))
+// 		if data != nil {
+// 			// Meaning that there is no internal error, but a business error
+// 			return nil, status.Error(codes.InvalidArgument, eris.Cause(err).Error())
+// 		} else {
+// 			return nil, status.Errorf(codes.Internal, fmt.Errorf("failed to get participant: %w", err).Error())
+// 		}
+// 	}
 
-	arrObj := []*pb.Reference{}
-	for _, item := range data {
-		arrObj = append(arrObj, &pb.Reference{
-			Code: item.Code,
-			Name: item.Name,
-		})
-	}
+// 	arrObj := []*pb.Reference{}
+// 	for _, item := range data {
+// 		arrObj = append(arrObj, &pb.Reference{
+// 			Code: item.Code,
+// 			Name: item.Name,
+// 		})
+// 	}
 
-	return &pb.ReferenceResponse{
-		StatusCode: int32(codes.OK),
-		Message:    "Success",
-		Reference:  arrObj,
-	}, nil
-}
+// 	return &pb.ReferenceResponse{
+// 		StatusCode: int32(codes.OK),
+// 		Message:    "Success",
+// 		Reference:  arrObj,
+// 	}, nil
+// }
 
 func (s *BPJSReferenceRPCService) PoliclinicsReference(ctx context.Context, in *pb.PoliclinicsReferenceRequest) (*pb.ReferenceResponse, error) {
 	obj := models.PoliReferenceParams{
@@ -131,7 +130,7 @@ func (s *BPJSReferenceRPCService) PoliclinicsReference(ctx context.Context, in *
 		return nil, status.Errorf(codes.Internal, "Invalid Poli Reference Params. Somehow bypassed the validation step")
 	}
 
-	data, err := s.Service.PoliclinicsReference(ctx, params)
+	data, err := s.Service.PolyclinicsReference(ctx, params)
 	if err != nil {
 		// log.Println(eris.Cause(err))
 		if data != nil {
@@ -433,37 +432,37 @@ func (s *BPJSReferenceRPCService) DistrictReference(ctx context.Context, in *pb.
 	}, nil
 }
 
-func (s *BPJSReferenceRPCService) AttendingPhysicianReference(ctx context.Context, in *pb.AttendingPhysicianReferenceRequest) (*pb.ReferenceResponse, error) {
-	obj := models.AttendingPhysicianReferenceParams{
-		DoctorName: in.GetDoctorCode(),
-	}
+// func (s *BPJSReferenceRPCService) AttendingPhysicianReference(ctx context.Context, in *pb.AttendingPhysicianReferenceRequest) (*pb.ReferenceResponse, error) {
+// 	obj := models.AttendingPhysicianReferenceParams{
+// 		DoctorName: in.GetDoctorCode(),
+// 	}
 
-	if err := utils.GetValidator().Struct(obj); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, fmt.Errorf("invalid request: %w", err).Error())
-	}
+// 	if err := utils.GetValidator().Struct(obj); err != nil {
+// 		return nil, status.Errorf(codes.InvalidArgument, fmt.Errorf("invalid request: %w", err).Error())
+// 	}
 
-	data, err := s.Service.AttendingPhysicianReference(ctx, obj.DoctorName)
-	if err != nil {
-		// log.Println(eris.Cause(err))
-		if data != nil {
-			// Meaning that there is no internal error, but a business error
-			return nil, status.Error(codes.InvalidArgument, eris.Cause(err).Error())
-		} else {
-			return nil, status.Errorf(codes.Internal, fmt.Errorf("failed to get participant: %w", err).Error())
-		}
-	}
+// 	data, err := s.Service.AttendingPhysicianReference(ctx, obj.DoctorName)
+// 	if err != nil {
+// 		// log.Println(eris.Cause(err))
+// 		if data != nil {
+// 			// Meaning that there is no internal error, but a business error
+// 			return nil, status.Error(codes.InvalidArgument, eris.Cause(err).Error())
+// 		} else {
+// 			return nil, status.Errorf(codes.Internal, fmt.Errorf("failed to get participant: %w", err).Error())
+// 		}
+// 	}
 
-	arrObj := []*pb.Reference{}
-	for _, item := range data {
-		arrObj = append(arrObj, &pb.Reference{
-			Code: item.Code,
-			Name: item.Name,
-		})
-	}
+// 	arrObj := []*pb.Reference{}
+// 	for _, item := range data {
+// 		arrObj = append(arrObj, &pb.Reference{
+// 			Code: item.Code,
+// 			Name: item.Name,
+// 		})
+// 	}
 
-	return &pb.ReferenceResponse{
-		StatusCode: int32(codes.OK),
-		Message:    "Success",
-		Reference:  arrObj,
-	}, nil
-}
+// 	return &pb.ReferenceResponse{
+// 		StatusCode: int32(codes.OK),
+// 		Message:    "Success",
+// 		Reference:  arrObj,
+// 	}, nil
+// }

@@ -76,9 +76,9 @@ type ReusableNote struct {
 
 // Search Params
 type ParticipantSearchParams struct {
-	NIK         string `validate:"omitempty,numeric,min=16" example:"1234567890123456"`
-	BPJSNumber  string `validate:"omitempty,numeric,min=13" example:"1234567890123"`
-	ServiceDate string `validate:"omitempty,datetime=2006-01-02" example:"2021-01-01"`
+	NIK         string `validate:"omitempty,numeric,min=16" example:"1234567890123456" param:"nik"`
+	BPJSNumber  string `validate:"omitempty,numeric,min=13" example:"1234567890123" param:"card_number"`
+	ServiceDate string `validate:"omitempty,datetime=2006-01-02" example:"2021-01-01" param:"service_date"`
 }
 
 func (p *BPJSParticipant) ToProto() *pb.BPJSParticipant {

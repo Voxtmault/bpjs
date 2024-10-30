@@ -69,9 +69,11 @@ type FileHandlingConfig struct {
 }
 
 type BPJSConfig struct {
-	BPJSURL        string
-	VClaimPath     string
-	ICarePath      string
+	BPJSURL       string
+	VClaimPath    string
+	AplicaresPath string
+	ICarePath     string
+
 	ConsumerID     string
 	ConsumerSecret string
 	Userkey        string

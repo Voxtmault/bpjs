@@ -1,54 +1,54 @@
 package models
 
 type TreatmentClass struct {
-	TreatmentClassRights  string `json:"klsRawatHak"`
-	TreatmentClassUpgrade string `json:"klsRawatNaik"`
-	Financing             string `json:"pembiayaan"`
-	PIC                   string `json:"penanggungJawab"`
+	TreatmentClassRights  string `json:"klsRawatHak" validate:"required,number"`
+	TreatmentClassUpgrade string `json:"klsRawatNaik" validate:"omitempty,number"`
+	Financing             string `json:"pembiayaan" validate:"required_with=TreatmentClassUpgrade,len=0|number"`
+	PIC                   string `json:"penanggungJawab" validate:"required_with=TreatmentClassUpgrade,len=0|number"`
 }
 
 type SEPReference struct {
-	SourceReference          string `json:"asalRujukan"`
-	ReferenceDate            string `json:"tglRujukan"`
-	ReferenceNumber          string `json:"noRujukan"`
-	ReferencedHealthFacility string `json:"ppkRujukan"`
+	SourceReference          string `json:"asalRujukan" validate:"required,number"`
+	ReferenceDate            string `json:"tglRujukan" validate:"required,datetime=2006-01-02"`
+	ReferenceNumber          string `json:"noRujukan" validate:"omitempty"`
+	ReferencedHealthFacility string `json:"ppkRujukan" validate:"required"`
 }
 
 type SEPPolyclinics struct {
-	PoliclinicCode string `json:"tujuan"` // Polyclinics Code from BPJS
-	Executive      string `json:"eksekutif"`
+	PoliclinicCode string `json:"tujuan" validate:"required,alphanum"` // Polyclinics Code from BPJS
+	Executive      string `json:"eksekutif" validate:"required,number"`
 }
 
 type SEPCOB struct {
-	COB string `json:"cob"`
+	COB string `json:"cob" validate:"required,number"`
 }
 
 type SEPCataract struct {
-	Cataract string `json:"katarak"`
+	Cataract string `json:"katarak" validate:"required,number"`
 }
 
 type Guarantee struct {
-	Accident  string    `json:"lakaLantas"`
-	LPNumber  string    `json:"noLP"`
-	Guarantor Guarantor `json:"penjamin"`
+	Accident  string    `json:"lakaLantas" validate:"required,number"`
+	LPNumber  string    `json:"noLP" validate:"omitempty"`
+	Guarantor Guarantor `json:"penjamin" validate:"required"`
 }
 
 type Guarantor struct {
-	IncidentDate string     `json:"tglKejadian"`
-	Note         string     `json:"keterangan"`
-	Suppletion   Suppletion `json:"suplesi"`
+	IncidentDate string     `json:"tglKejadian" validate:"omitempty,datetime=2006-01-02"`
+	Note         string     `json:"keterangan" validate:"omitempty"`
+	Suppletion   Suppletion `json:"suplesi" validate:"required"`
 }
 
 type Suppletion struct {
-	Suppletion       string           `json:"suplesi"`
-	SuppletionNumber string           `json:"noSepSuplesi"`
-	AccidentLocation AccidentLocation `json:"lokasiLaka"`
+	Suppletion       string           `json:"suplesi" validate:"required,number"`
+	SuppletionNumber string           `json:"noSepSuplesi" validate:"omitempty"`
+	AccidentLocation AccidentLocation `json:"lokasiLaka" validate:"required"`
 }
 
 type AccidentLocation struct {
-	ProvinceCode string `json:"kdPropinsi"`
-	RegencyCode  string `json:"kdKabupaten"`
-	DistrictCode string `json:"kdKecamatan"`
+	ProvinceCode string `json:"kdPropinsi" validate:"omitempty"`
+	RegencyCode  string `json:"kdKabupaten" validate:"omitempty"`
+	DistrictCode string `json:"kdKecamatan" validate:"omitempty"`
 
 	// Everything Bellow is used for parsing SEP Accident Locations
 	Note         string `json:"ketKejadian,omitempty"`
@@ -57,34 +57,34 @@ type AccidentLocation struct {
 }
 
 type SKDP struct {
-	LetterNumber           string `json:"noSurat"`
-	AttendingPhysicianCode string `json:"kodeDPJP"`
+	LetterNumber           string `json:"noSurat" validate:"omitempty"`
+	AttendingPhysicianCode string `json:"kodeDPJP" validate:"omitempty"`
 }
 
 // SEPCreate is used to create a new SEP number from BPJS, Wrap this inside a variable named t_sep
 // and then wrap the t_sep inside a variable named request. I know it's weird but what can we do :D
 type SEPCreate struct {
-	BPJSID                string         `json:"noKartu"`
-	ServiceDate           string         `json:"tglSep"`
-	HealthFacilityCode    string         `json:"ppkPelayanan"`
-	ServiceType           string         `json:"jnsPelayanan"`
-	TreatmentClass        TreatmentClass `json:"klsRawat"`
-	MRNumber              string         `json:"noMR"`
-	Reference             SEPReference   `json:"rujukan"`
+	BPJSID                string         `json:"noKartu" validate:"required,len=13,number"`
+	ServiceDate           string         `json:"tglSep" validate:"required,datetime=2006-01-02"`
+	HealthFacilityCode    string         `json:"ppkPelayanan" validate:"required"`
+	ServiceType           string         `json:"jnsPelayanan" validate:"required,number,len=1"`
+	TreatmentClass        TreatmentClass `json:"klsRawat" validate:"required"`
+	MRNumber              string         `json:"noMR" validate:"required"`
+	Reference             SEPReference   `json:"rujukan" validate:"required"`
 	Note                  string         `json:"catatan"`
-	InitialDiagnosis      string         `json:"diagAwal"`
-	Polyclinics           SEPPolyclinics `json:"poli"`
-	COB                   SEPCOB         `json:"cob"`
-	Cataracts             SEPCataract    `json:"katarak"`
-	Guarantee             Guarantee      `json:"jaminan"`
-	VisitationPurpose     string         `json:"tujuanKunj"`
-	ProcedureFlag         string         `json:"flagProcedure"`
-	HealthCareSupportCode string         `json:"kdPenunjang"`
-	ServiceAssessment     string         `json:"assesmentPel"`
-	SKDP                  SKDP           `json:"skdp"`
-	ServiceDPJP           string         `json:"dpjpLayan"`
-	PhoneNum              string         `json:"noTelp"`
-	User                  string         `json:"user"`
+	InitialDiagnosis      string         `json:"diagAwal" validate:"required"`
+	Polyclinics           SEPPolyclinics `json:"poli" validate:"required"`
+	COB                   SEPCOB         `json:"cob" validate:"required"`
+	Cataracts             SEPCataract    `json:"katarak" validate:"required"`
+	Guarantee             Guarantee      `json:"jaminan" validate:"required"`
+	VisitationPurpose     string         `json:"tujuanKunj" validate:"required,number"`
+	ProcedureFlag         string         `json:"flagProcedure" validate:"required_unless=VisitationPurpose 0"`
+	HealthCareSupportCode string         `json:"kdPenunjang" validate:"required_unless=VisitationPurpose 0"`
+	ServiceAssessment     string         `json:"assesmentPel" validate:"omitempty"`
+	SKDP                  SKDP           `json:"skdp" validate:"required"`
+	ServiceDPJP           string         `json:"dpjpLayan" validate:"required_unless=ServiceType 1"`
+	PhoneNum              string         `json:"noTelp" validate:"omitempty"`
+	User                  string         `json:"user" validate:"required"`
 }
 
 type TSEP struct {
@@ -129,6 +129,9 @@ type SEPCreateResponse struct {
 	PoliclinicExecutive   string          `json:"poliEksekutif"`
 	SEPDate               string          `json:"tglSep"`
 	VisitationPurpose     string          `json:"tujuanKunj"`
+}
+type SEPCreateResponseWrapper struct {
+	SEP *SEPCreateResponse `json:"sep"`
 }
 
 type SEPUpdate struct {
@@ -221,6 +224,25 @@ type SEPUpdateTanggalPulangRequest struct {
 	User             string `json:"user"`
 }
 
+type DischargedSEP struct {
+	SEPNumber          string `json:"noSep"`
+	UpdatingSEPNumber  string `json:"noSepUpdating"`
+	ServiceType        string `json:"jnsPelayanan"`
+	HealthFacilityCode string `json:"ppkTujuan"`
+	CardNumber         string `json:"noKartu"`
+	ParticipantName    string `json:"nama"`
+	ServiceDate        string `json:"tglSep"`
+	DischargedDate     string `json:"tglPulang"`
+	Status             string `json:"status"`
+	DateOfDeath        string `json:"tglMeninggal"`
+	LetterNumber       string `json:"noSurat"`
+	Note               string `json:"keterangan"`
+	User               string `json:"user"`
+}
+type DischargedSEPWrapper struct {
+	List []*DischargedSEP `json:"list"`
+}
+
 type SEPFingerPrintResponse struct {
 	Lists []*SEPGetListFingerPrint `json:"list"`
 }
@@ -252,4 +274,39 @@ type PostRequestRandomQuestion struct {
 	TglLahir  string `json:"tglLahir"`
 	PpkPst    string `json:"ppkPst"`
 	User      string `json:"user"`
+}
+
+type InternalSEP struct {
+	// To be honest, i feel like the first 2 are the same variables, it's just that i feel like
+	// BPJS forgot that these exists and decided to just eye ball it. Man talk about spaghetti code
+	// And please for the love of god, use a consistent json naming scheme will you, almost everything is using camelCase
+	// and now, what is this? snake_case? what is this? python?
+	TargetReferralPolyclinic     string `json:"tujuanrujuk"`
+	TargetReferralPolyclinicCode string `json:"kdpolituj"`
+	TargetReferralPolyclinicName string `json:"namatujuanrujuk"`
+	SourcePolyName               string `json:"nmpoliasal"`
+	SourcePolyCode               string `json:"kdpoliasal"`
+	InternalServiceDate          string `json:"tglrujukinternal"`
+	SEPNumber                    string `json:"nosep"`
+	ReferredSEPNumber            string `json:"nosepref"`
+	HealthFacilityCode           string `json:"ppkpelsep"`
+	NoKapSt                      string `json:"nokapst"`
+	ServiceDate                  string `json:"tglsep"`
+	LetterNumber                 string `json:"nosurat"`
+	InternalFlag                 string `json:"flaginternal"`
+	SupportCode                  string `json:"kdpenunjang"`
+	SupportName                  string `json:"nmpenunjang"`
+	Diagnosis                    string `json:"diagppk"`
+	DiagnosisName                string `json:"nmdiag"`
+	DoctorCode                   string `json:"kodedokter"`
+	DoctorName                   string `json:"nmdokter"`
+	FlagProcedure                string `json:"flagprocedure"`
+	ConsultationOption           string `json:"opsikonsul"`
+	SEPFlag                      string `json:"flagsep"`
+	FUser                        string `json:"fuser"`
+	FDate                        string `json:"fdate"`
+}
+type InternalSEPWrapper struct {
+	List  []*InternalSEP `json:"list"`
+	Count string         `json:"count"`
 }

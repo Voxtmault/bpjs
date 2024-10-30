@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -17,6 +18,12 @@ type BPJSParticipantService struct {
 }
 
 var _ interfaces.Participant = &BPJSParticipantService{}
+
+func NewParticipantService(httpHandler interfaces.RequestHandler) *BPJSParticipantService {
+	return &BPJSParticipantService{
+		HttpHandler: httpHandler,
+	}
+}
 
 func (s *BPJSParticipantService) GetParticipant(ctx context.Context, query *models.ParticipantSearchParams) (*models.BPJSParticipant, error) {
 
@@ -43,7 +50,7 @@ func (s *BPJSParticipantService) GetParticipant(ctx context.Context, query *mode
 		return &models.BPJSParticipant{}, eris.New("invalid query params")
 	}
 
-	// log.Println("URL: ", baseUrl)
+	slog.Debug("participant service -> GetParticipant", "url", baseUrl)
 
 	req, err := http.NewRequest(method, baseUrl, nil)
 	if err != nil {
