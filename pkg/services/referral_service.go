@@ -42,19 +42,20 @@ func NewReferralService(httpHandler interfaces.RequestHandler) *ReferralService 
 	}
 }
 
-func (s *ReferralService) GetParticipantReferralByReferralNumber(ctx context.Context, referalNumber string, source uint) ([]*models.Referral, error) {
-	arrObj := []*models.Referral{}
+func (s *ReferralService) GetParticipantReferralByReferralNumber(ctx context.Context, referralNumber string, source uint) (*models.Referral, error) {
 
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
 	if source == models.PCareSource {
-		baseUrl += "/Rujukan/" + referalNumber
+		baseUrl += "/Rujukan/" + referralNumber
 	} else if source == models.HospitalSource {
-		baseUrl += "/Rujukan/RS/" + referalNumber
+		baseUrl += "/Rujukan/RS/" + referralNumber
 	} else {
 		return nil, eris.New("invalid source")
 	}
+
+	slog.Debug("referral_service -> GetParticipantReferralByReferralNumber", "base url", baseUrl)
 
 	req, err := http.NewRequest(method, baseUrl, nil)
 	if err != nil {
@@ -64,7 +65,7 @@ func (s *ReferralService) GetParticipantReferralByReferralNumber(ctx context.Con
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj, eris.Wrap(eris.New(resp), "BPJS Message")
+			return &models.Referral{}, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -72,14 +73,32 @@ func (s *ReferralService) GetParticipantReferralByReferralNumber(ctx context.Con
 
 	log.Println("result", resp)
 
-	var obj models.Referral
+	var obj models.ReferralWrapper
 	if err = json.Unmarshal([]byte(resp), &obj); err != nil {
 		return nil, eris.Wrap(err, "failed to unmarshal response")
 	}
 
-	arrObj = append(arrObj, &obj)
+	return &obj.Referral, nil
+}
 
-	return arrObj, nil
+func (s *ReferralService) GetParticipantReferralByReferralNumberV2(ctx context.Context, referralNumber string, source uint) (*models.SelfReferralGet, error) {
+
+	self := models.SelfReferralGet{}
+
+	data, err := s.GetParticipantReferralByReferralNumber(ctx, referralNumber, source)
+	if err != nil {
+		if data != nil {
+			self.FromBPJS(data)
+			return &self, eris.Wrap(err, "failed to get referral")
+		} else {
+			return nil, eris.Wrap(err, "failed to get referral")
+		}
+	}
+
+	self.FromBPJS(data)
+	self.ReferralNumber = referralNumber
+
+	return &self, nil
 }
 
 func (s *ReferralService) GetParticipantReferralByBPJSNumber(ctx context.Context, bpjsNumber string, source uint, multi bool) ([]*models.Referral, error) {
@@ -97,10 +116,12 @@ func (s *ReferralService) GetParticipantReferralByBPJSNumber(ctx context.Context
 	}
 
 	if multi {
-		baseUrl += "/List/Peserta" + bpjsNumber
+		baseUrl += "/List/Peserta/" + bpjsNumber
 	} else {
 		baseUrl += "/Peserta/" + bpjsNumber
 	}
+
+	slog.Debug("referral_service -> GetParticipantReferralByBPJSNumber", "base url", baseUrl)
 
 	req, err := http.NewRequest(method, baseUrl, nil)
 	if err != nil {
@@ -116,12 +137,14 @@ func (s *ReferralService) GetParticipantReferralByBPJSNumber(ctx context.Context
 		}
 	}
 
-	var obj models.Referral
+	log.Println("result", resp)
+
+	var obj models.ReferralWrapper
 	if err = json.Unmarshal([]byte(resp), &obj); err != nil {
 		return nil, eris.Wrap(err, "failed to unmarshal response")
 	}
 
-	arrObj = append(arrObj, &obj)
+	arrObj = append(arrObj, &obj.Referral)
 
 	return arrObj, nil
 }

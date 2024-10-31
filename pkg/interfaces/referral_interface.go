@@ -8,7 +8,9 @@ import (
 
 // Rujukan
 type Referral interface {
-	GetParticipantReferralByReferralNumber(ctx context.Context, referralNumber string, source uint) ([]*models.Referral, error)
+	GetParticipantReferralByReferralNumber(ctx context.Context, referralNumber string, source uint) (*models.Referral, error)
+	GetParticipantReferralByReferralNumberV2(ctx context.Context, referralNumber string, source uint) (*models.SelfReferralGet, error)
+
 	GetParticipantReferralByBPJSNumber(ctx context.Context, bpjsNumber string, source uint, multi bool) ([]*models.Referral, error)
 
 	// GetReferredSpecialist is used to get lists of specialists available from the referred health facility

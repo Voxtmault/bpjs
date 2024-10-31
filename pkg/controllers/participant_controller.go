@@ -56,3 +56,37 @@ func (s ParticipantController) GetParticipant(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, res)
 }
+
+func (s ParticipantController) GetParticipantV2(c echo.Context) error {
+	var res Response
+
+	var obj models.ParticipantSearchParams
+	if err := c.Bind(&obj); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if obj.ServiceDate == "" {
+		obj.ServiceDate = time.Now().Format(time.DateTime)
+	}
+
+	if errMap := utils.MangleValidateResult(s.validate.Validate(obj)); errMap != nil {
+		res.Message = "Validation Error"
+		res.Data = errMap
+		return echo.NewHTTPError(http.StatusBadRequest, res)
+	}
+
+	var err error
+	res.Data, err = s.service.GetParticipantV2(c.Request().Context(), &obj)
+	if err != nil {
+		if res.Data != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		} else {
+			slog.Error("participant_controller -> get v2", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}

@@ -73,3 +73,22 @@ func (s *BPJSParticipantService) GetParticipant(ctx context.Context, query *mode
 
 	return obj.Participant, nil
 }
+
+func (s *BPJSParticipantService) GetParticipantV2(ctx context.Context, query *models.ParticipantSearchParams) (*models.SelfParticipant, error) {
+
+	var response models.SelfParticipant
+
+	data, err := s.GetParticipant(ctx, query)
+	if err != nil {
+		if data != nil {
+			response.FromBPJS(data)
+			return &response, eris.Wrap(err, "failed to get participant")
+		} else {
+			return nil, eris.Wrap(err, "failed to get participant")
+		}
+	}
+
+	response.FromBPJS(data)
+
+	return &response, nil
+}

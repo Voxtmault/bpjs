@@ -16,6 +16,10 @@ type Referral struct {
 	Referrer        Reference `json:"provPerujuk"`
 	EncounterDate   string    `json:"tglKunjungan"`
 }
+type ReferralWrapper struct {
+	ReferralSource string   `json:"asalFaskes"`
+	Referral       Referral `json:"rujukan"`
+}
 
 type ReferredSpecialist struct {
 	SpecialistCode string `json:"kodeSpesialis"`

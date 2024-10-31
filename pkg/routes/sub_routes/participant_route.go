@@ -20,4 +20,6 @@ func Participant(e *echo.Echo, group *echo.Group) {
 	participant := group.Group("/participant")
 	participant.GET("/nik/:nik/:service_date", participantController.GetParticipant)
 	participant.GET("/card_number/:card_number/:service_date", participantController.GetParticipant)
+	participant.GET("/v2/nik/:nik/:service_date", participantController.GetParticipantV2)
+	participant.GET("/v2/card_number/:card_number/:service_date", participantController.GetParticipantV2)
 }

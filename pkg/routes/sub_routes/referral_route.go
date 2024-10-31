@@ -21,6 +21,7 @@ func Referral(e *echo.Echo, group *echo.Group) {
 
 	// Getter
 	referral.GET("/:referral_number/:source", referralController.GetReferralViaReferralLetter)
+	referral.GET("/v2/:referral_number/:source", referralController.GetReferralViaReferralLetterV2)
 	referral.GET("/participant/:card_number/:bulk/:source", referralController.GetReferralViaCardNumber)
 	referral.GET("/outgoing/:start_date/:end_date", referralController.GetOutgoingReferral)
 	referral.GET("/outgoing/:referral_number", referralController.GetOutgoingReferralDetail)

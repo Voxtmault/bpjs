@@ -54,6 +54,36 @@ func (s ReferralControllers) GetReferralViaReferralLetter(c echo.Context) error 
 	return c.JSON(http.StatusOK, res)
 }
 
+func (s ReferralControllers) GetReferralViaReferralLetterV2(c echo.Context) error {
+	var res Response
+
+	referralNumber := c.Param("referral_number")
+	if referralNumber == "" || referralNumber == ":referral_number" {
+		return echo.NewHTTPError(http.StatusBadRequest, "no surat rujukan tidak boleh kosong")
+	}
+
+	source := c.Param("source")
+	if source == "" || source == ":source" {
+		return echo.NewHTTPError(http.StatusBadRequest, "asal surat rujukan tidak boleh kosong")
+	}
+	parsedSource, _ := strconv.Atoi(source)
+
+	var err error
+	res.Data, err = s.service.GetParticipantReferralByReferralNumberV2(c.Request().Context(), referralNumber, uint(parsedSource))
+	if err != nil {
+		if res.Data != "" {
+			return echo.NewHTTPError(http.StatusBadRequest, eris.Cause(err).Error())
+		} else {
+			slog.Error("sep_controller -> GetReferralViaReferralLetter", "stack trace", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, eris.Cause(err).Error())
+		}
+	}
+
+	res.Message = "Success"
+
+	return c.JSON(http.StatusOK, res)
+}
+
 func (s ReferralControllers) GetReferralViaCardNumber(c echo.Context) error {
 	var res Response
 

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/rotisserie/eris"
@@ -64,14 +65,13 @@ func (s *ControlPlanService) GetViaSEP(ctx context.Context, sepNumber string) ([
 	return arrObj, nil
 }
 
-func (s *ControlPlanService) GetViaControlLetterNumber(ctx context.Context, letterNumber string) ([]*models.ControlPlanGetViaControlLetterNumber, error) {
-	arrObj := []*models.ControlPlanGetViaControlLetterNumber{}
+func (s *ControlPlanService) GetViaControlLetterNumber(ctx context.Context, letterNumber string) (*models.ControlPlanGetViaControlLetterNumber, error) {
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
 	baseUrl += "/RencanaKontrol/noSuratKontrol/" + letterNumber
 
-	log.Println("URL: ", baseUrl)
+	slog.Debug("control_plan_service -> GetViaControlLetterNumber", "url", baseUrl)
 
 	req, err := http.NewRequest(method, baseUrl, nil)
 	if err != nil {
@@ -83,7 +83,7 @@ func (s *ControlPlanService) GetViaControlLetterNumber(ctx context.Context, lett
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj, eris.Wrap(eris.New(resp), "BPJS Message")
+			return &models.ControlPlanGetViaControlLetterNumber{}, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -91,15 +91,17 @@ func (s *ControlPlanService) GetViaControlLetterNumber(ctx context.Context, lett
 
 	log.Println("Response: ", resp)
 
+	var obj models.ControlPlanGetViaControlLetterNumber
+
 	if resp == "" {
-		return arrObj, nil
+		return nil, eris.New("something went wrong")
 	} else {
-		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+		if err = json.Unmarshal([]byte(resp), &obj); err != nil {
 			return nil, eris.Wrap(err, "failed to unmarshal response")
 		}
 	}
 
-	return arrObj, nil
+	return &obj, nil
 }
 
 func (s *ControlPlanService) GetControlPlanFromCardNumber(ctx context.Context, params *models.ControlPlansFromCardNumberParams) ([]*models.ControlPlans, error) {

@@ -45,9 +45,7 @@ func TestGetParticipantReferralByReferralNumber(t *testing.T) {
 		t.Errorf("Error getting referral: %v", err)
 	}
 
-	for _, item := range data {
-		log.Println("Referral: ", item)
-	}
+	log.Println("Referral: ", data)
 }
 
 func TestGetReferedSpecialist(t *testing.T) {
