@@ -27,8 +27,8 @@ func NewControlPlanService(httpHandler interfaces.RequestHandler) *ControlPlanSe
 	}
 }
 
-func (s *ControlPlanService) GetViaSEP(ctx context.Context, sepNumber string) ([]*models.ControlPlanGetViaSEP, error) {
-	arrObj := []*models.ControlPlanGetViaSEP{}
+func (s *ControlPlanService) GetViaSEP(ctx context.Context, sepNumber string) (*models.ControlPlanGetViaSEP, error) {
+	obj := &models.ControlPlanGetViaSEP{}
 	baseUrl := config.GetConfig().BPJSConfig.BPJSURL + config.GetConfig().BPJSConfig.VClaimPath
 	method := http.MethodGet
 
@@ -46,7 +46,7 @@ func (s *ControlPlanService) GetViaSEP(ctx context.Context, sepNumber string) ([
 	resp, err := s.HttpHandler.SendRequest(ctx, req)
 	if err != nil {
 		if resp != "" {
-			return arrObj, eris.Wrap(eris.New(resp), "BPJS Message")
+			return obj, eris.Wrap(eris.New(resp), "BPJS Message")
 		} else {
 			return nil, eris.Wrap(err, "failed to send http request")
 		}
@@ -55,14 +55,14 @@ func (s *ControlPlanService) GetViaSEP(ctx context.Context, sepNumber string) ([
 	log.Println("Response: ", resp)
 
 	if resp == "" {
-		return arrObj, nil
+		return obj, nil
 	} else {
-		if err = json.Unmarshal([]byte(resp), &arrObj); err != nil {
+		if err = json.Unmarshal([]byte(resp), &obj); err != nil {
 			return nil, eris.Wrap(err, "failed to unmarshal response")
 		}
 	}
 
-	return arrObj, nil
+	return obj, nil
 }
 
 func (s *ControlPlanService) GetViaControlLetterNumber(ctx context.Context, letterNumber string) (*models.ControlPlanGetViaControlLetterNumber, error) {
