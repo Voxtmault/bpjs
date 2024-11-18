@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -14,18 +15,21 @@ import (
 	"github.com/rotisserie/eris"
 	"github.com/voxtmault/bpjs-rs-module/config"
 	"github.com/voxtmault/bpjs-rs-module/pkg/interfaces"
+	"github.com/voxtmault/bpjs-rs-module/pkg/logger"
 	"github.com/voxtmault/bpjs-rs-module/pkg/models"
 )
 
 type RequestHandlerService struct {
-	Security interfaces.BPJSSecurity
+	Security      interfaces.BPJSSecurity
+	RequestLogger *logger.RequestLogger
 }
 
 var _ interfaces.RequestHandler = &RequestHandlerService{}
 
 func NewBPJSRequestHandlerService(security interfaces.BPJSSecurity) *RequestHandlerService {
 	return &RequestHandlerService{
-		Security: security,
+		Security:      security,
+		RequestLogger: logger.GetRequestLogger(),
 	}
 }
 
@@ -51,6 +55,16 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 	req.Header.Add("X-timestamp", fmt.Sprintf("%d", timeStamp))
 	req.Header.Add("X-signature", signature)
 	req.Header.Add("user_key", cfg.Userkey)
+
+	var requestBody []byte
+	if req.Body != nil {
+		requestBody, err = io.ReadAll(req.Body)
+		if err != nil {
+			return "", eris.Wrap(err, "failed to read request body")
+		}
+		// Reset the request body so it can be read again by the HTTP client
+		req.Body = io.NopCloser(bytes.NewBuffer(requestBody))
+	}
 
 	// Send the request
 	client := &http.Client{}
@@ -86,6 +100,14 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 
 		// [Update] they will occasionally use the MetaData.Code as the error message, it's weird man, i tell you
 
+		// Log the request and response
+		req.Body = io.NopCloser(bytes.NewBuffer(requestBody))   // Restore the request body
+		resp.Body = io.NopCloser(bytes.NewBuffer([]byte(body))) // Restore the response body
+
+		if err = s.RequestLogger.LogEggressRequest(ctx, req, resp); err != nil {
+			return "", eris.Wrap(err, "failed to log egress request")
+		}
+
 		return response.MetaData.Message, eris.New(response.MetaData.Code)
 	}
 
@@ -98,6 +120,14 @@ func (s *RequestHandlerService) SendRequest(ctx context.Context, req *http.Reque
 	raw, err := s.Security.DecryptResponse(ctx, timeStamp, response.Response)
 	if err != nil {
 		return "", eris.Wrap(err, "failed to decrypt response")
+	}
+
+	// Log the request and response
+	req.Body = io.NopCloser(bytes.NewBuffer(requestBody))  // Restore the request body
+	resp.Body = io.NopCloser(bytes.NewBuffer([]byte(raw))) // Restore the response body
+
+	if err = s.RequestLogger.LogEggressRequest(ctx, req, resp); err != nil {
+		return "", eris.Wrap(err, "failed to log egress request")
 	}
 
 	return raw, nil

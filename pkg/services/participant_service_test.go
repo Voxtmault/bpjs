@@ -8,20 +8,33 @@ import (
 
 	"github.com/rotisserie/eris"
 	"github.com/voxtmault/bpjs-rs-module/config"
+	"github.com/voxtmault/bpjs-rs-module/pkg/logger"
 	"github.com/voxtmault/bpjs-rs-module/pkg/models"
+	"github.com/voxtmault/bpjs-rs-module/pkg/storage"
 )
 
-func TestGetParticipant(t *testing.T) {
-	config.New("/home/andy/go-projects/rs/bpjs/.env")
+var envPath = "../../.env"
 
-	service := BPJSParticipantService{
-		HttpHandler: &RequestHandlerService{
-			Security: &BPJSSecurityService{},
-		},
+func TestGetParticipant(t *testing.T) {
+	cfg := config.New(envPath)
+	if err := storage.InitMariaDB(&cfg.DBConfig); err != nil {
+		t.Errorf("Error initializing MariaDB: %v", err)
+		return
 	}
+	if err := storage.InitRedis(&cfg.RedisConfig); err != nil {
+		t.Errorf("Error initializing Redis: %v", err)
+		return
+	}
+	logger.InitRequestLogger()
+
+	service := NewParticipantService(
+		NewBPJSRequestHandlerService(
+			NewBPJSSecurityService(),
+		),
+	)
 
 	data, err := service.GetParticipant(context.Background(), &models.ParticipantSearchParams{
-		BPJSNumber: "0002088008515",
+		BPJSNumber: "0002088008515a",
 		// NIK: "1234567890987651",
 	})
 	if err != nil {

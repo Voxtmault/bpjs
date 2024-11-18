@@ -33,7 +33,7 @@ func (s *SEPService) InsertSEP(ctx context.Context, obj *models.SEPCreate) (*mod
 
 	baseUrl += "/SEP/2.0/insert"
 
-	log.Println("URL: ", baseUrl)
+	// log.Println("URL: ", baseUrl)
 
 	jsonData, err := json.Marshal(models.BPJSRequest{
 		Request: &models.TSEP{
@@ -44,7 +44,7 @@ func (s *SEPService) InsertSEP(ctx context.Context, obj *models.SEPCreate) (*mod
 		return nil, eris.Wrap(err, "failed to marshal object")
 	}
 
-	log.Println("JSON Data: ", string(jsonData))
+	// log.Println("JSON Data: ", string(jsonData))
 
 	req, err := http.NewRequest(method, baseUrl, bytes.NewBuffer(jsonData))
 	if err != nil {

@@ -12,6 +12,7 @@ import (
 	"github.com/voxtmault/bpjs-rs-module/config"
 	"github.com/voxtmault/bpjs-rs-module/pkg/logger"
 	"github.com/voxtmault/bpjs-rs-module/pkg/routes"
+	"github.com/voxtmault/bpjs-rs-module/pkg/storage"
 )
 
 func main() {
@@ -26,14 +27,17 @@ func main() {
 	}
 
 	// Adjust to your needs
-	// if err := storage.InitMariaDB(&AppConfig.DBConfig); err != nil {
-	// 	panic(err)
-	// }
-	// if err := storage.InitRedis(&AppConfig.RedisConfig); err != nil {
-	// 	panic(err)
-	// }
+	if err := storage.InitMariaDB(&AppConfig.DBConfig); err != nil {
+		panic(err)
+	}
+	if err := storage.InitRedis(&AppConfig.RedisConfig); err != nil {
+		panic(err)
+	}
 
 	if err := logger.InitLogger(&AppConfig.LoggingConfig); err != nil {
+		panic(err)
+	}
+	if err := logger.InitRequestLogger(); err != nil {
 		panic(err)
 	}
 

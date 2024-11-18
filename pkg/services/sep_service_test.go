@@ -8,7 +8,9 @@ import (
 
 	"github.com/rotisserie/eris"
 	"github.com/voxtmault/bpjs-rs-module/config"
+	"github.com/voxtmault/bpjs-rs-module/pkg/logger"
 	"github.com/voxtmault/bpjs-rs-module/pkg/models"
+	"github.com/voxtmault/bpjs-rs-module/pkg/storage"
 )
 
 func TestInsertSEP(t *testing.T) {
@@ -237,13 +239,22 @@ func TestDeleteSEP(t *testing.T) {
 
 func TestGetSEP(t *testing.T) {
 	// Load the config
-	config.New("../../.env")
-
-	s := SEPService{
-		HttpHandler: &RequestHandlerService{
-			Security: &BPJSSecurityService{},
-		},
+	cfg := config.New("../../.env")
+	if err := storage.InitMariaDB(&cfg.DBConfig); err != nil {
+		t.Errorf("Error initializing MariaDB: %v", err)
+		return
 	}
+	if err := storage.InitRedis(&cfg.RedisConfig); err != nil {
+		t.Errorf("Error initializing Redis: %v", err)
+		return
+	}
+	logger.InitRequestLogger()
+
+	s := NewSEPService(
+		NewBPJSRequestHandlerService(
+			NewBPJSSecurityService(),
+		),
+	)
 
 	data, err := s.GetSEP(context.Background(), "0182R0091024V000001")
 	if err != nil {
@@ -257,13 +268,22 @@ func TestGetSEP(t *testing.T) {
 
 func TestRequestSEP(t *testing.T) {
 	// Load the config
-	config.New("/home/andy/go-projects/rs/bpjs/.env")
-
-	s := SEPService{
-		HttpHandler: &RequestHandlerService{
-			Security: &BPJSSecurityService{},
-		},
+	cfg := config.New("/home/andy/go-projects/rs/bpjs/.env")
+	if err := storage.InitMariaDB(&cfg.DBConfig); err != nil {
+		t.Errorf("Error initializing MariaDB: %v", err)
+		return
 	}
+	if err := storage.InitRedis(&cfg.RedisConfig); err != nil {
+		t.Errorf("Error initializing Redis: %v", err)
+		return
+	}
+	logger.InitRequestLogger()
+
+	s := NewSEPService(
+		NewBPJSRequestHandlerService(
+			NewBPJSSecurityService(),
+		),
+	)
 
 	sample := `
 	{
