@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"log/slog"
+
 	"github.com/voxtmault/bpjs-rs-module/config"
 
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -46,4 +48,16 @@ func GetServerLogger() *lumberjack.Logger {
 
 func GetErrorLogger() *lumberjack.Logger {
 	return errorLogger
+}
+
+func CloseLogger() error {
+	slog.Info("closing server logger")
+	if err := serverLogger.Close(); err != nil {
+		return err
+	}
+	slog.Info("closing error logger")
+	if err := errorLogger.Close(); err != nil {
+		return err
+	}
+	return nil
 }

@@ -43,7 +43,7 @@ func InitRedis(config *config.RedisConfig) error {
 		return eris.Wrap(err, "Init Redis")
 	}
 
-	slog.Info("Successfully opened redis connection")
+	slog.Info("successfully opened redis connection")
 	return nil
 }
 
@@ -52,6 +52,7 @@ func CloseRedis() error {
 		return eris.Wrap(err, "Closing redis connection")
 	}
 
+	slog.Info("successfully closed redis connection")
 	return nil
 }
 

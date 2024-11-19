@@ -7,7 +7,7 @@ type TreatmentClass struct {
 	PIC                   string `json:"penanggungJawab" validate:"required_with=TreatmentClassUpgrade,len=0|number"`
 }
 
-type SEPReference struct {
+type SEPReferral struct {
 	SourceReference          string `json:"asalRujukan" validate:"required,number"`
 	ReferenceDate            string `json:"tglRujukan" validate:"required,datetime=2006-01-02"`
 	ReferenceNumber          string `json:"noRujukan" validate:"omitempty"`
@@ -70,7 +70,7 @@ type SEPCreate struct {
 	ServiceType           string         `json:"jnsPelayanan" validate:"required,number,len=1"`
 	TreatmentClass        TreatmentClass `json:"klsRawat" validate:"required"`
 	MRNumber              string         `json:"noMR" validate:"required"`
-	Reference             SEPReference   `json:"rujukan" validate:"required"`
+	Referral              SEPReferral    `json:"rujukan" validate:"required"`
 	Note                  string         `json:"catatan"`
 	InitialDiagnosis      string         `json:"diagAwal" validate:"required"`
 	Polyclinics           SEPPolyclinics `json:"poli" validate:"required"`
@@ -85,6 +85,7 @@ type SEPCreate struct {
 	ServiceDPJP           string         `json:"dpjpLayan" validate:"required_unless=ServiceType 1"`
 	PhoneNum              string         `json:"noTelp" validate:"omitempty"`
 	User                  string         `json:"user" validate:"required"`
+	UserID                uint           `json:"user_id" validate:"required"`
 }
 
 type TSEP struct {

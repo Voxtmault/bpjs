@@ -26,6 +26,7 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 func InitRoute() {
 	e := echo.New()
 	e.HideBanner = true
+	e.HidePort = true
 
 	validate := validator.New()
 	validate.RegisterValidation("specialDiag", models.ValidateSpecialReferralDiagnosisCode)
@@ -81,18 +82,15 @@ func InitRoute() {
 func StartHTTPService(e *echo.Echo) {
 	cfg := config.GetConfig()
 	go func() {
-		slog.Info("Starting Service...")
-
 		// HTTPS
 		if cfg.SSLConfig.CertPath != "" && cfg.SSLConfig.KeyPath != "" {
-			slog.Info("Starting in HTTPS")
-			slog.Info("Port: " + cfg.AppPort)
+			slog.Info("restful service running in https", "port", cfg.AppRestPort)
 
 			// Redirect all HTTP Traffic to HTTPS since the API is running in HTTPS
 			e.Pre(middleware.HTTPSRedirect())
 
 			s := http.Server{
-				Addr:    fmt.Sprintf(":%s", cfg.AppPort),
+				Addr:    fmt.Sprintf(":%s", cfg.AppRestPort),
 				Handler: e,
 			}
 			if err := s.ListenAndServeTLS(cfg.SSLConfig.CertPath, cfg.SSLConfig.KeyPath); err != nil {
@@ -100,9 +98,8 @@ func StartHTTPService(e *echo.Echo) {
 			}
 		} else {
 			//HTTP
-			slog.Info("Starting in HTTP")
-			slog.Info("Port: " + cfg.AppPort)
-			if err := e.Start(":" + cfg.AppPort); err != nil {
+			slog.Info("restful service running in http", "port", cfg.AppRestPort)
+			if err := e.Start(":" + cfg.AppRestPort); err != nil {
 				slog.Warn("Shutting down the service...")
 			}
 		}

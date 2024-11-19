@@ -93,7 +93,8 @@ type AppConfig struct {
 	AppMode     string
 	AppLanguage string
 	AppTimezone string
-	AppPort     string
+	AppRestPort string
+	AppGRPCPort string
 	AppHost     string
 	AppRoot     string
 	DebugMode   bool
@@ -171,7 +172,8 @@ func New(envPath string) *AppConfig {
 		AppMode:     getEnv("APP_MODE", "devs"),
 		AppLanguage: getEnv("APP_LANG", "en"),
 		AppTimezone: getEnv("APP_TIMEZONE", "Asia/Jakarta"),
-		AppPort:     getEnv("APP_PORT", ""),
+		AppRestPort: getEnv("APP_REST_PORT", "45000"),
+		AppGRPCPort: getEnv("APP_GRPC_PORT", "46000"),
 		AppHost:     getEnv("APP_HOST", ""),
 		AppRoot:     getEnv("APP_ROOT", "/api/v1"),
 		DebugMode:   getEnvAsBool("DEBUG", false),

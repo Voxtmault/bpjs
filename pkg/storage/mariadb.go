@@ -3,7 +3,7 @@ package storage
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -42,7 +42,6 @@ func validateMariaDBConfig(config *config.DBConfig) error {
 
 // InitMaria Establish a connection using the provided credentials with the mariadb service
 func InitMariaDB(config *config.DBConfig) error {
-	log.Println("Opening Connection to Database")
 	var err error
 
 	// Validation
@@ -78,7 +77,7 @@ func InitMariaDB(config *config.DBConfig) error {
 		return eris.Wrap(err, "Error verifying database connection")
 	}
 
-	log.Println("Successfully opened database connection !")
+	slog.Info("successfully opened mariadb connection")
 	return nil
 }
 
@@ -102,8 +101,10 @@ func GetDBStats() MariaDatabaseStats {
 // Under normal circumstances, this shouldn't be called by anyone other than main
 func Close() error {
 	if err := mariaCon.Close(); err != nil {
+		slog.Error("failed to close mariadb connection", "error", err)
 		return eris.Wrap(err, "Closing DB")
 	} else {
+		slog.Info("closed mariadb connection")
 		return nil
 	}
 }
